@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import NotFound from "@/app/not-found";
 import BookServiceApi, { Book } from "@/services/book.service";
 
 export default function BookDetail() {
@@ -15,4 +16,9 @@ export default function BookDetail() {
       setBookDetail(dataPart);
     })();
   }, []);
+
+  if (!bookDetail) return <NotFound />;
+  else {
+    return <></>;
+  }
 }

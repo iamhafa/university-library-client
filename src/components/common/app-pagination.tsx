@@ -2,7 +2,13 @@
 
 import { Button } from "@/ui/button";
 
-export default function AppPagination() {
+type Props = {
+  totalPage?: number;
+  currentPage?: number;
+  totalRecord?: number;
+};
+
+export default function AppPagination({}: Props) {
   return (
     <div className="flex items-center justify-end space-x-2 py-4">
       <div className="flex-1 text-sm text-muted-foreground">

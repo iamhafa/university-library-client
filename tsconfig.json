@@ -24,6 +24,13 @@
       "@/common/*": ["./src/components/common/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "postcss.config.mjs"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "postcss.config.mjs",
+    "src/components/columns/book.column.tsx"
+  ],
   "exclude": ["node_modules"]
 }
