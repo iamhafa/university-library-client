@@ -4,9 +4,10 @@ interface TBasePaginationResponse<T> {
   results: TResponseResult;
   dataPart: {
     data: T;
-    page: number;
     limit: number;
-    total: number;
+    current_page: number;
+    total_items: number;
+    total_pages: number;
   };
 }
 // The type for api has pagination value

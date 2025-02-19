@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { Button } from "@/ui/button";
 import {
   useReactTable,
   ColumnFiltersState,
@@ -9,10 +11,8 @@ import {
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { Button } from "@/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,12 +24,21 @@ import AppPagination from "@/components/common/app-pagination";
 import AppHeader from "@/components/common/app-header";
 import { bookColumns } from "@/components/columns/book.column";
 import AppTable from "@/components/common/app-table";
-import { useRouter } from "next/navigation";
 import { EAppRouter } from "@/constants/app-router.enum";
+import { usePagination } from "@/hooks/use-pagination";
 
 export default function BookPage() {
   const router = useRouter();
   const [bookData, setBookData] = useState<Book[]>([]);
+  const [totalItems, setTotalItems] = useState<number>(0);
+
+  const { page, limit, totalPages, changePage, changeLimit } = usePagination({
+    totalItems: totalItems,
+  });
+
+  /**
+   * React table
+   */
   const [rowSelection, setRowSelection] = useState({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -38,13 +47,7 @@ export default function BookPage() {
     updated_at: false,
   });
 
-  useEffect(() => {
-    (async () => {
-      const { dataPart } = await BookServiceApi.getAlls();
-      setBookData(dataPart.data);
-    })();
-  }, []);
-
+  // Handle table core
   const bookTable = useReactTable<Book>({
     data: bookData,
     columns: bookColumns,
@@ -55,7 +58,8 @@ export default function BookPage() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true, // work with api pagination
+    pageCount: totalPages, // work with api pagination
     state: {
       sorting,
       columnFilters,
@@ -63,6 +67,15 @@ export default function BookPage() {
       rowSelection,
     },
   });
+
+  useEffect(() => {
+    (async () => {
+      const { dataPart } = await BookServiceApi.getAlls({ page, limit });
+
+      setBookData(dataPart.data);
+      setTotalItems(dataPart.total_items);
+    })();
+  }, [page, totalPages]);
 
   return (
     <div className="w-full">
@@ -103,7 +116,13 @@ export default function BookPage() {
       <AppTable tableData={bookTable} tableColumns={bookColumns} />
 
       {/* Pagination */}
-      <AppPagination />
+      <AppPagination
+        totalPages={totalPages}
+        currentPage={page}
+        pageSize={limit}
+        onPageChange={changePage}
+        onPageSizeChange={changeLimit}
+      />
     </div>
   );
 }

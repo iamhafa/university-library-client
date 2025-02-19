@@ -7,7 +7,6 @@ import BookServiceApi, { Book } from "@/services/book.service";
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
-
   const [bookDetail, setBookDetail] = useState<Book>();
 
   useEffect(() => {
