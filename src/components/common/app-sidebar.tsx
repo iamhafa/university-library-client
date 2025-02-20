@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Calendar, Home, Search, Settings } from "lucide-react";
+import { Book, Calendar, Home, Search, Settings, ActivitySquareIcon } from "lucide-react";
 
 import {
   Sidebar,
@@ -16,6 +16,11 @@ import { EAppRouter } from "@/constants/app-router.enum";
 
 // Menu items.
 const items = [
+  {
+    title: "Dashboard",
+    url: EAppRouter.DASHBOARD,
+    icon: ActivitySquareIcon,
+  },
   {
     title: "Sách thư viện",
     url: EAppRouter.LIBRARY_BOOK_PAGE,
