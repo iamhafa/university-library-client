@@ -1,6 +1,7 @@
 import api from "@/config/api.config";
-import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
+import PaginationDto from "@/helpers/pagination.dto";
 import { TBaseEntity } from "@/types/base-entity.type";
+import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
 
 export type Author = TBaseEntity & {
   first_name: string;
@@ -9,8 +10,18 @@ export type Author = TBaseEntity & {
 };
 
 export default abstract class AuthorApiService {
-  static async getAll(): TApiPaginationResponse<Author[]> {
-    const { data } = await api.get("/author");
+  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<Author[]> {
+    const { data } = await api.get("/author", {
+      params: {
+        page,
+        limit,
+      },
+    });
+    return data;
+  }
+
+  static async searchByQuery(query: string): TApiResponse<Author> {
+    const { data } = await api.get(`/author/search?q=${query}`);
     return data;
   }
 
