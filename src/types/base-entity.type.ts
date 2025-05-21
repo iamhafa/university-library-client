@@ -1,6 +1,6 @@
 export type TBaseEntity = {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
+  id?: number;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
 };

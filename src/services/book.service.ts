@@ -4,17 +4,16 @@ import { TApiPaginationResponse, TApiResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
 
 export type Book = TBaseEntity & {
-  id: number;
   title: string;
-  ISBN: string;
-  price: number;
-  total_page: number;
-  quantity: string;
-  publish_date: string;
-  description: string;
   author_id: number;
   genre_id: number;
   publisher_id: number;
+  price: number;
+  ISBN: string;
+  total_page: number;
+  quantity: number;
+  publish_date: Date;
+  description: string;
 };
 
 export default abstract class BookServiceApi {
@@ -30,6 +29,11 @@ export default abstract class BookServiceApi {
 
   static async getOneById(id: string): TApiResponse<Book> {
     const { data } = await api.get(`/book/${id}`);
+    return data;
+  }
+
+  static async create(payload: Book): TApiResponse<Book> {
+    const { data } = await api.post("/book", payload);
     return data;
   }
 }

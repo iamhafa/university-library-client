@@ -4,8 +4,7 @@ import { TBaseEntity } from "@/types/base-entity.type";
 import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
 
 export type Author = TBaseEntity & {
-  first_name: string;
-  last_name: string;
+  name: string;
   bio: string;
 };
 
