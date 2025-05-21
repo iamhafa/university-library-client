@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, FieldErrors, useForm } from "react-hook-form";
@@ -16,6 +17,7 @@ import GenreApiService, { Genre } from "@/services/genre.service";
 import PublisherApiService, { Publisher } from "@/services/publisher.service";
 import BookServiceApi from "@/services/book.service";
 import { bookFormSchema, TBookFormValues } from "@/schemas/book.schema";
+import { EAppRouter } from "@/constants/app-router.enum";
 
 export default function AddBook() {
   const router = useRouter();
@@ -35,7 +37,7 @@ export default function AddBook() {
   });
 
   useEffect(() => {
-    const fetchSelectOptions = async () => {
+    const fetchSelectOptions = async (): Promise<void> => {
       const { dataPart: authors } = await AuthorApiService.getAll({});
       const { dataPart: genres } = await GenreApiService.getAll({});
       const { dataPart: publishers } = await PublisherApiService.getAll({});
@@ -48,17 +50,19 @@ export default function AddBook() {
     fetchSelectOptions();
   }, []);
 
-  const onValidSubmit = (values: TBookFormValues) => {
-    if (isSubmitSuccessful) {
-      return BookServiceApi.create(values);
-    }
+  const onValidSubmit = async (values: TBookFormValues): Promise<void> => {
+    const { results, error } = await BookServiceApi.create(values);
 
-    console.log(values);
-    console.log(errors);
-    console.log(isSubmitSuccessful);
+    if (results === "1") {
+      toast.success("Tạo sách thành công!");
+      router.push(EAppRouter.LIBRARY_BOOK_PAGE);
+    } else {
+      toast.error(error);
+    }
   };
 
-  const onInvalidSubmit = (errors: FieldErrors) => {
+  const onInvalidSubmit = (errors: FieldErrors<TBookFormValues>): void => {
+    toast.error("Thông tin chưa hợp lệ. Vui lòng kiểm tra lại.");
     console.log(errors);
   };
 

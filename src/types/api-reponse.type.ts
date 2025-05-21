@@ -16,6 +16,8 @@ export type TApiPaginationResponse<T> = Promise<TBasePaginationResponse<T>>;
 interface TBaseResponse<T> {
   results: TResponseResult;
   dataPart: T;
+  error: string;
+  errorMessage: string[];
 }
 // The type for basic api
 export type TApiResponse<T> = Promise<TBaseResponse<T>>;
