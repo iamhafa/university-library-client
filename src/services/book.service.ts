@@ -12,7 +12,7 @@ export type Book = TBaseEntity & {
   ISBN: string;
   total_page: number;
   quantity: number;
-  publish_date: Date;
+  publish_date: string;
   description: string;
 };
 
