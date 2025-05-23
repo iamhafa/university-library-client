@@ -12,13 +12,9 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  Table,
 } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/ui/dropdown-menu";
 import BookServiceApi, { type Book } from "@/services/book.service";
 import AppPagination from "@/components/common/app-pagination";
 import AppHeader from "@/components/common/app-header";
@@ -48,7 +44,7 @@ export default function BookPage() {
   });
 
   // Handle table core
-  const bookTable = useReactTable<Book>({
+  const bookTable: Table<Book> = useReactTable<Book>({
     data: bookData,
     columns: bookColumns,
     onSortingChange: setSorting,
@@ -75,17 +71,18 @@ export default function BookPage() {
       setBookData(dataPart.data);
       setTotalItems(dataPart.total_items);
     })();
-  }, [page, totalPages]);
+
+    // reset selection khi pageIndex thay đổi
+    bookTable.resetRowSelection();
+  }, [page, totalPages, bookTable.getState().pagination.pageIndex]);
 
   return (
     <div className="w-full">
-      <AppHeader title="Sách thư viện" />
+      <AppHeader title="Sách thư viện" sub_title="Quản lý sách trong thư viện và theo dõi trạng thái" />
 
       {/* Drop down menu */}
       <div className="flex items-center py-4">
-        <Button onClick={() => router.push(EAppRouter.LIBRARY_BOOK_PAGE_ADD_BOOK)}>
-          Thêm sách
-        </Button>
+        <Button onClick={() => router.push(EAppRouter.LIBRARY_BOOK_PAGE_ADD_BOOK)}>Thêm sách</Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -102,7 +99,7 @@ export default function BookPage() {
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value: boolean) => column.toggleVisibility(value)}
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
@@ -117,6 +114,7 @@ export default function BookPage() {
 
       {/* Pagination */}
       <AppPagination
+        totalSelects={bookTable.getSelectedRowModel().rows.length}
         totalPages={totalPages}
         currentPage={page}
         pageSize={limit}

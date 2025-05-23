@@ -11,9 +11,7 @@ export const bookColumns: ColumnDef<Book>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
         className="ml-4"
@@ -68,13 +66,13 @@ export const bookColumns: ColumnDef<Book>[] = [
     cell: ({ row }) => <div>{row.original.publish_date}</div>,
   },
   {
-    id: "created_at",
+    id: "created at",
     accessorKey: "created at",
     header: "Ngày tạo",
     cell: ({ row }) => <div>{row.original.created_at}</div>,
   },
   {
-    id: "updated_at",
+    id: "updated at",
     accessorKey: "updated at",
     header: "Ngày cập nhật",
     cell: ({ row }) => <div>{row.original.updated_at}</div>,

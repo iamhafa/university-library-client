@@ -38,9 +38,11 @@ export default function AddBook() {
 
   useEffect(() => {
     const fetchSelectOptions = async (): Promise<void> => {
-      const { dataPart: authors } = await AuthorApiService.getAll({});
-      const { dataPart: genres } = await GenreApiService.getAll({});
-      const { dataPart: publishers } = await PublisherApiService.getAll({});
+      const [{ dataPart: authors }, { dataPart: genres }, { dataPart: publishers }] = await Promise.all([
+        AuthorApiService.getAll({}),
+        GenreApiService.getAll({}),
+        PublisherApiService.getAll({}),
+      ]);
 
       setAuthorOptions(authors.data);
       setGenreOptions(genres.data);
@@ -54,7 +56,7 @@ export default function AddBook() {
     const { results, error } = await BookServiceApi.create(values);
 
     if (results === "1") {
-      toast.success("Tạo sách thành công!");
+      toast.success("Tạo sách thành công!", { richColors: true });
       router.push(EAppRouter.LIBRARY_BOOK_PAGE);
     } else {
       toast.error(error);
@@ -63,11 +65,11 @@ export default function AddBook() {
 
   const onInvalidSubmit = (errors: FieldErrors<TBookFormValues>): void => {
     toast.error("Thông tin chưa hợp lệ. Vui lòng kiểm tra lại.");
-    console.log(errors);
+    console.error(errors);
   };
 
   return (
-    <div className="mx-auto bg-white rounded-lg">
+    <div className="mx-auto rounded-lg">
       <AppHeader title="Thêm sách mới" />
 
       <form onSubmit={handleSubmit(onValidSubmit, onInvalidSubmit)} className="grid grid-cols-2 gap-x-12 gap-y-6 p-10">
