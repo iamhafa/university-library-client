@@ -30,7 +30,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "postcss.config.mjs",
-    "src/components/columns/book.column.tsx"
+    "src/components/columns/book-table.column.tsx"
   ],
   "exclude": ["node_modules"]
 }

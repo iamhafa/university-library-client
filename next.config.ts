@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   async redirects() {
     return [
       {
@@ -10,6 +9,15 @@ const nextConfig: NextConfig = {
         permanent: true, // true = mã 308, tốt cho SEO nếu bạn không đổi lại
       },
     ];
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "tiki.vn",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

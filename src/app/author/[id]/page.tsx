@@ -19,7 +19,7 @@ export default function AuthorDetail() {
   return (
     <Card>
       <CardHeader>
-        <div>{authorDetail?.first_name}</div>
+        <div>{authorDetail?.name}</div>
       </CardHeader>
     </Card>
   );

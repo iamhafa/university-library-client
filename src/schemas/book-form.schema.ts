@@ -10,6 +10,10 @@ export const bookFormSchema = z.object({
     })
     .nonempty("Tên sách không được để trống"),
 
+  image_url: z.string({
+    invalid_type_error: "Đường dẫn ảnh phải là chuỗi",
+  }),
+
   genre_id: z.coerce
     .number({
       required_error: "Vui lòng chọn thể loại",

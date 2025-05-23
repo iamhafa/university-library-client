@@ -16,7 +16,7 @@ import AuthorApiService, { Author } from "@/services/author.service";
 import GenreApiService, { Genre } from "@/services/genre.service";
 import PublisherApiService, { Publisher } from "@/services/publisher.service";
 import BookServiceApi from "@/services/book.service";
-import { bookFormSchema, TBookFormValues } from "@/schemas/book.schema";
+import { bookFormSchema, TBookFormValues } from "@/schemas/book-form.schema";
 import { EAppRouter } from "@/constants/app-router.enum";
 
 export default function AddBook() {
@@ -176,6 +176,12 @@ export default function AddBook() {
           <Label htmlFor="ISBN">ISBN</Label>
           <Input id="ISBN" {...register("ISBN")} />
           <ErrorMessage message={errors.ISBN?.message} />
+        </div>
+
+        <div className="col-span-1">
+          <Label htmlFor="image_url">Đường dẫn ảnh</Label>
+          <Input id="image_url" placeholder="https://image.com" {...register("image_url")} />
+          <ErrorMessage message={errors.image_url?.message} />
         </div>
 
         <div className="col-span-1">

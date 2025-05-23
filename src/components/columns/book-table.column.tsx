@@ -6,7 +6,7 @@ import { Checkbox } from "@/ui/checkbox";
 import { EAppRouter } from "@/constants/app-router.enum";
 
 // define columns for Book page
-export const bookColumns: ColumnDef<Book>[] = [
+export const bookTableColumns: ColumnDef<Book>[] = [
   {
     id: "select",
     header: ({ table }) => (

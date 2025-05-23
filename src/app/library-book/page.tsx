@@ -18,7 +18,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import BookServiceApi, { type Book } from "@/services/book.service";
 import AppPagination from "@/components/common/app-pagination";
 import AppHeader from "@/components/common/app-header";
-import { bookColumns } from "@/components/columns/book.column";
+import { bookTableColumns } from "@/components/columns/book-table.column";
 import AppTable from "@/components/common/app-table";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination";
@@ -46,7 +46,7 @@ export default function BookPage() {
   // Handle table core
   const bookTable: Table<Book> = useReactTable<Book>({
     data: bookData,
-    columns: bookColumns,
+    columns: bookTableColumns,
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
@@ -66,7 +66,7 @@ export default function BookPage() {
 
   useEffect(() => {
     (async () => {
-      const { dataPart } = await BookServiceApi.getAlls({ page, limit });
+      const { dataPart } = await BookServiceApi.getAll({ page, limit });
 
       setBookData(dataPart.data);
       setTotalItems(dataPart.total_items);
@@ -110,7 +110,7 @@ export default function BookPage() {
       </div>
 
       {/* Main table */}
-      <AppTable tableData={bookTable} tableColumns={bookColumns} />
+      <AppTable tableData={bookTable} tableColumns={bookTableColumns} />
 
       {/* Pagination */}
       <AppPagination
