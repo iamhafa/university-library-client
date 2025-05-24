@@ -2,11 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  ChevronDownIcon,
-  MoreHorizontal, // Ví dụ icon cho actions
-  ArrowUpDown, // Ví dụ icon cho sorting
-} from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 
 import {
   ColumnDef,
@@ -19,142 +15,25 @@ import {
   getPaginationRowModel, // Cần cho pagination tích hợp
   getSortedRowModel,
   useReactTable,
-  Table as TanstackTable, // Đổi tên để tránh xung đột với component Table của shadcn/ui
 } from "@tanstack/react-table";
 
 // shadcn/ui components
-import { Button } from "@/components/ui/button"; // Đảm bảo đường dẫn đúng
-import { Checkbox } from "@/components/ui/checkbox"; // Đảm bảo đường dẫn đúng
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"; // Đảm bảo đường dẫn đúng
-import { Input } from "@/components/ui/input"; // Đảm bảo đường dẫn đúng
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"; // Đảm bảo đường dẫn đúng
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import BookServiceApi, { type Book } from "@/services/book.service";
 import AppHeader from "@/components/common/app-header";
-import { EAppRouter } from "@/constants/app-router.enum"; // Đảm bảo đường dẫn đúng
+import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
-import { Badge } from "@/components/ui/badge";
-
-// --- BẮT ĐẦU: Định nghĩa lại Columns với shadcn/ui style ---
-// Bạn sẽ cần di chuyển và tùy chỉnh phần này
-const getBookColumns = (onEdit: (book: Book) => void, onDelete: (book: Book) => void): ColumnDef<Book>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Tiêu đề
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
-  },
-  {
-    accessorKey: "ISBN",
-    header: "ISBN",
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className="text-right">Giá</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "quantity",
-    header: "Số lượng",
-  },
-  {
-    accessorKey: "genre.name", // Ví dụ nếu bạn muốn hiển thị tên thể loại
-    header: "Thể loại",
-    cell: ({ row }) => {
-      const genre = row.original.genre; // Truy cập object genre gốc
-      return <Badge>{genre?.name || "N/A"}</Badge>;
-    },
-  },
-  {
-    accessorKey: "publisher.name", // Ví dụ nếu bạn muốn hiển thị tên NXB
-    header: "Nhà xuất bản",
-    cell: ({ row }) => {
-      const publisher = row.original.publisher;
-      return <div>{publisher?.name || "N/A"}</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const book = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Mở menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onEdit(book)}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(book.ISBN)}>Copy ISBN</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onDelete(book)} className="text-red-600">
-              Xóa
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
-  // Thêm các cột ẩn mặc định nếu cần (giống như created_at, updated_at của bạn)
-  {
-    accessorKey: "created_at",
-    header: "Ngày tạo",
-    enableHiding: true, // Cho phép ẩn
-  },
-  {
-    accessorKey: "updated_at",
-    header: "Ngày cập nhật",
-    enableHiding: true, // Cho phép ẩn
-  },
-];
-// --- KẾT THÚC: Định nghĩa Columns ---
+import { getBookTableColumns } from "@/components/columns/book-table.column";
 
 export default function BookPage() {
   const router = useRouter();
@@ -204,9 +83,9 @@ export default function BookPage() {
     }
   };
 
-  const bookTableColumns = getBookColumns(handleEditBook, handleDeleteBook);
+  const bookTableColumns: ColumnDef<Book>[] = getBookTableColumns(handleEditBook, handleDeleteBook);
 
-  const table = useReactTable<Book>({
+  const bookTable = useReactTable<Book>({
     data: bookData,
     columns: bookTableColumns,
     state: {
@@ -215,7 +94,7 @@ export default function BookPage() {
       rowSelection,
       columnFilters,
       pagination: {
-        // Quản lý state pagination cho table
+        // Quản lý state pagination cho bookTable
         pageIndex: page - 1, // TanStack Table dùng 0-based index
         pageSize: limit,
       },
@@ -239,8 +118,8 @@ export default function BookPage() {
       setBookData(dataPart.data);
       setTotalItems(dataPart.total_items);
       // Tính toán lại totalPages trong hook usePagination
-      // (Hoặc table.setPageCount có thể được dùng nếu hook usePagination không tự cập nhật)
-      // table.setPageCount(calculateTotalPages(dataPart.total_items, currentLimit));
+      // (Hoặc bookTable.setPageCount có thể được dùng nếu hook usePagination không tự cập nhật)
+      // bookTable.setPageCount(calculateTotalPages(dataPart.total_items, currentLimit));
     } catch (error) {
       console.error("Lỗi fetch sách:", error);
       setBookData([]); // Reset data nếu có lỗi
@@ -252,12 +131,12 @@ export default function BookPage() {
     fetchBooks(page, limit);
   }, [page, limit]);
 
-  // Cập nhật table pageCount khi totalPages từ hook usePagination thay đổi
+  // Cập nhật bookTable pageCount khi totalPages từ hook usePagination thay đổi
   useEffect(() => {
-    if (table && totalPages !== undefined) {
-      table.setPageCount(totalPages);
+    if (bookTable && totalPages !== undefined) {
+      bookTable.setPageCount(totalPages);
     }
-  }, [totalPages, table]);
+  }, [totalPages, bookTable]);
 
   return (
     <div className="w-full space-y-4 p-4 md:p-6">
@@ -268,14 +147,14 @@ export default function BookPage() {
         <div className="flex flex-1 items-center space-x-2">
           <Input
             placeholder="Lọc theo tiêu đề..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-            onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
+            value={(bookTable.getColumn("title")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => bookTable.getColumn("title")?.setFilterValue(event.target.value)}
             className="h-9 w-[150px] lg:w-[250px]"
           />
           {/* Thêm các filter khác nếu cần, ví dụ:
-          {table.getColumn("genre") && (
+          {bookTable.getColumn("genre") && (
             <DataTableFacetedFilter
-              column={table.getColumn("genre")}
+              column={bookTable.getColumn("genre")}
               title="Genre"
               options={genres} // genres là một mảng { label: string, value: string, icon?: React.ComponentType<{ className?: string }> }
             />
@@ -291,7 +170,7 @@ export default function BookPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {table
+              {bookTable
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
                 .map((column) => {
@@ -320,11 +199,11 @@ export default function BookPage() {
         </div>
       </div>
 
-      {/* Main table */}
+      {/* Main bookTable */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {bookTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -337,8 +216,8 @@ export default function BookPage() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+            {bookTable.getRowModel().rows?.length ? (
+              bookTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
@@ -359,12 +238,11 @@ export default function BookPage() {
       {/* Pagination */}
       <div className="flex items-center justify-between py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} của {table.getFilteredRowModel().rows.length} dòng được
-          chọn.
+          {bookTable.getFilteredSelectedRowModel().rows.length} của {bookTable.getFilteredRowModel().rows.length} dòng được chọn.
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-sm">
-            Trang {table.getState().pagination.pageIndex + 1} của {table.getPageCount()}
+            Trang {bookTable.getState().pagination.pageIndex + 1} của {bookTable.getPageCount()}
           </span>
           <Button
             variant="outline"
@@ -372,7 +250,7 @@ export default function BookPage() {
             onClick={() => {
               const newPage = page - 1;
               changePage(newPage);
-              // table.previousPage() // Không dùng khi manualPagination true và API call
+              // bookTable.previousPage() // Không dùng khi manualPagination true và API call
             }}
             disabled={page <= 1}
           >
@@ -384,7 +262,7 @@ export default function BookPage() {
             onClick={() => {
               const newPage = page + 1;
               changePage(newPage);
-              // table.nextPage() // Không dùng khi manualPagination true và API call
+              bookTable.nextPage(); // Không dùng khi manualPagination true và API call
             }}
             disabled={page >= totalPages}
           >
@@ -398,7 +276,7 @@ export default function BookPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[10, 20, 30, 40, 50].map((pageSize: number) => (
                 <DropdownMenuItem key={pageSize} onSelect={() => changeLimit(pageSize)}>
                   {pageSize}
                 </DropdownMenuItem>

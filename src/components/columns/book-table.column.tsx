@@ -1,12 +1,20 @@
-import Link from "next/link";
 import { Book } from "@/services/book.service";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/ui/button";
-import { Checkbox } from "@/ui/checkbox";
-import { EAppRouter } from "@/constants/app-router.enum";
+import { Checkbox } from "../ui/checkbox";
+import { Button } from "../ui/button";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Badge } from "../ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { currencyFormat } from "@/helpers/currency.format";
 
-// define columns for Book page
-export const bookTableColumns: ColumnDef<Book>[] = [
+export const getBookTableColumns = (onEdit: (book: Book) => void, onDelete: (book: Book) => void): ColumnDef<Book>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -14,7 +22,7 @@ export const bookTableColumns: ColumnDef<Book>[] = [
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="ml-4"
+        className="translate-y-[2px]"
       />
     ),
     cell: ({ row }) => (
@@ -22,63 +30,92 @@ export const bookTableColumns: ColumnDef<Book>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        className="ml-4"
+        className="translate-y-[2px]"
       />
     ),
+    enableSorting: false,
+    enableHiding: false,
   },
   {
-    id: "title",
     accessorKey: "title",
-    header: "Tên sách",
-    enableResizing: true,
-    cell: ({ row }) => (
-      <Link
-        href={`${EAppRouter.LIBRARY_BOOK_PAGE}/${row.original.id}`}
-        className="capitalize hover:underline hover:text-blue-600"
-      >
-        {row.original.title}
-      </Link>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Tiêu đề
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
   },
   {
     accessorKey: "ISBN",
     header: "ISBN",
-    cell: ({ row }) => <div>{row.original.ISBN}</div>,
   },
   {
     accessorKey: "price",
-    header: "Giá",
-    cell: ({ row }) => <div className="font-medium">{`$${row.original.price}`}</div>,
-  },
-  {
-    accessorKey: "page number",
-    header: "Tổng số trang",
-    cell: ({ row }) => <div className="text-center font-medium">{row.original.total_page}</div>,
+    header: () => <div className="text-right">Giá</div>,
+    cell: ({ row }) => {
+      const formatted: string = currencyFormat(row.getValue("price"));
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
   {
     accessorKey: "quantity",
     header: "Số lượng",
-    cell: ({ row }) => <div className="text-center">{row.original.quantity}</div>,
   },
   {
-    accessorKey: "published date",
-    header: "Ngày phát hành",
-    cell: ({ row }) => <div>{row.original.publish_date}</div>,
+    accessorKey: "genre.name", // Ví dụ nếu bạn muốn hiển thị tên thể loại
+    header: "Thể loại",
+    cell: ({ row }) => {
+      const genre = row.original.genre; // Truy cập object genre gốc
+      return <Badge>{genre?.name || "N/A"}</Badge>;
+    },
   },
   {
-    id: "created at",
-    accessorKey: "created at",
+    accessorKey: "publisher.name", // Ví dụ nếu bạn muốn hiển thị tên NXB
+    header: "Nhà xuất bản",
+    cell: ({ row }) => {
+      const publisher = row.original.publisher;
+      return <div>{publisher?.name || "N/A"}</div>;
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const book = row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Mở menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => onEdit(book)}>Sửa</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(book.ISBN)}>Copy ISBN</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onDelete(book)} className="text-red-600">
+              Xóa
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
+  // Thêm các cột ẩn mặc định nếu cần (giống như created_at, updated_at của bạn)
+  {
+    accessorKey: "created_at",
     header: "Ngày tạo",
-    cell: ({ row }) => <div>{row.original.created_at}</div>,
+    enableHiding: true, // Cho phép ẩn
   },
   {
-    id: "updated at",
-    accessorKey: "updated at",
+    accessorKey: "updated_at",
     header: "Ngày cập nhật",
-    cell: ({ row }) => <div>{row.original.updated_at}</div>,
-  },
-  {
-    id: "edit",
-    cell: () => <Button>Chỉnh sửa</Button>,
+    enableHiding: true, // Cho phép ẩn
   },
 ];
