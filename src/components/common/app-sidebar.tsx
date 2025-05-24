@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Calendar, Home, Search, Settings, ActivitySquareIcon } from "lucide-react";
+import { Book, Calendar, Home, Search, Settings, ActivitySquareIcon, EditIcon } from "lucide-react";
 
 import {
   Sidebar,
@@ -25,13 +25,13 @@ const items = [
   },
   {
     title: "Sách thư viện",
-    url: EAppRouter.LIBRARY_BOOK_PAGE,
+    url: EAppRouter.BOOK_MANGEMENT_PAGE,
     icon: Book,
   },
   {
     title: "Tác giả",
-    url: EAppRouter.AUTHOR_PAGE,
-    icon: Home,
+    url: EAppRouter.AUTHOR_MANGEMENT_PAGE,
+    icon: EditIcon,
   },
   {
     title: "Thể loại sách",

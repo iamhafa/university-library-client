@@ -23,21 +23,21 @@ type Props = {
  * @returns {(newLimit: number) => void} return.changeLimit - Function to change items per page
  */
 export const usePagination = ({ totalItems = 0, initialPage = 1, initialLimit = 10 }: Props) => {
-  const [page, setPage] = useState<number>(initialPage);
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [limit, setLimit] = useState<number>(initialLimit);
 
   const totalPages: number = Math.ceil(totalItems / limit);
 
-  const goToNextPage = () => setPage((prev) => (prev < totalPages ? prev + 1 : prev));
-  const goToPrevPage = () => setPage((prev) => (prev > 1 ? prev - 1 : prev));
-  const changePage = (newPage: number) => setPage(newPage);
+  const goToNextPage = () => setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  const goToPrevPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  const changePage = (newPage: number) => setCurrentPage(newPage);
   const changeLimit = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1); // Reset về trang đầu khi thay đổi số lượng items mỗi trang
+    setCurrentPage(1); // Reset về trang đầu khi thay đổi số lượng items mỗi trang
   };
 
   return {
-    page,
+    currentPage,
     limit,
     totalPages,
     goToNextPage,

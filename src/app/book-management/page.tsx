@@ -35,7 +35,7 @@ import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
 import { getBookTableColumns } from "@/components/columns/book-table.column";
 
-export default function BookPage() {
+export default function BookManagementPage() {
   const router = useRouter();
   const [bookData, setBookData] = useState<Book[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
@@ -44,14 +44,7 @@ export default function BookPage() {
   // cho API và cách table xử lý pagination sẽ hơi khác một chút.
   // TanStack Table có thể quản lý state pagination riêng (nếu không dùng manualPagination).
   // Vì bạn dùng manualPagination, hook của bạn vẫn quan trọng.
-  const {
-    page,
-    limit,
-    totalPages,
-    changePage,
-    changeLimit,
-    // calculateTotalPages, // Cần hàm này từ hook của bạn
-  } = usePagination({ totalItems: 0 }); // Khởi tạo totalItems là 0
+  const { currentPage, limit, totalPages, changePage, changeLimit } = usePagination({ totalItems: totalItems });
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -75,7 +68,7 @@ export default function BookPage() {
         console.log("Delete book:", book.id);
         alert(`Xóa sách: ${book.title}`);
         // Refetch data sau khi xóa
-        fetchBooks(page, limit);
+        fetchBooks(currentPage, limit);
       } catch (error) {
         console.error("Lỗi khi xóa sách:", error);
         alert("Đã có lỗi xảy ra khi xóa sách.");
@@ -93,11 +86,6 @@ export default function BookPage() {
       columnVisibility,
       rowSelection,
       columnFilters,
-      pagination: {
-        // Quản lý state pagination cho bookTable
-        pageIndex: page - 1, // TanStack Table dùng 0-based index
-        pageSize: limit,
-      },
     },
     enableRowSelection: true,
     manualPagination: true, // QUAN TRỌNG: vì bạn fetch API theo page/limit
@@ -112,14 +100,12 @@ export default function BookPage() {
     getPaginationRowModel: getPaginationRowModel(), // Cần thiết cho pagination UI
   });
 
-  const fetchBooks = async (currentPage: number, currentLimit: number) => {
+  const fetchBooks = async (page: number, limit: number) => {
     try {
-      const { dataPart } = await BookServiceApi.getAll({ page: currentPage, limit: currentLimit });
+      const { dataPart } = await BookServiceApi.getAll({ page, limit });
+
       setBookData(dataPart.data);
       setTotalItems(dataPart.total_items);
-      // Tính toán lại totalPages trong hook usePagination
-      // (Hoặc bookTable.setPageCount có thể được dùng nếu hook usePagination không tự cập nhật)
-      // bookTable.setPageCount(calculateTotalPages(dataPart.total_items, currentLimit));
     } catch (error) {
       console.error("Lỗi fetch sách:", error);
       setBookData([]); // Reset data nếu có lỗi
@@ -128,15 +114,8 @@ export default function BookPage() {
   };
 
   useEffect(() => {
-    fetchBooks(page, limit);
-  }, [page, limit]);
-
-  // Cập nhật bookTable pageCount khi totalPages từ hook usePagination thay đổi
-  useEffect(() => {
-    if (bookTable && totalPages !== undefined) {
-      bookTable.setPageCount(totalPages);
-    }
-  }, [totalPages, bookTable]);
+    fetchBooks(currentPage, limit);
+  }, [currentPage, limit]);
 
   return (
     <div className="w-full space-y-4 p-4 md:p-6">
@@ -151,18 +130,9 @@ export default function BookPage() {
             onChange={(event) => bookTable.getColumn("title")?.setFilterValue(event.target.value)}
             className="h-9 w-[150px] lg:w-[250px]"
           />
-          {/* Thêm các filter khác nếu cần, ví dụ:
-          {bookTable.getColumn("genre") && (
-            <DataTableFacetedFilter
-              column={bookTable.getColumn("genre")}
-              title="Genre"
-              options={genres} // genres là một mảng { label: string, value: string, icon?: React.ComponentType<{ className?: string }> }
-            />
-          )}
-          */}
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => router.push(EAppRouter.LIBRARY_BOOK_PAGE_ADD_BOOK)}>Thêm sách</Button>
+          <Button onClick={() => router.push(EAppRouter.BOOK_MANAGEMENT_ADD_BOOK_PAGE)}>Thêm sách</Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto h-9">
@@ -242,17 +212,17 @@ export default function BookPage() {
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-sm">
-            Trang {bookTable.getState().pagination.pageIndex + 1} của {bookTable.getPageCount()}
+            Trang {currentPage} của {totalPages}
           </span>
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
-              const newPage = page - 1;
+              const newPage = currentPage - 1;
               changePage(newPage);
               // bookTable.previousPage() // Không dùng khi manualPagination true và API call
             }}
-            disabled={page <= 1}
+            disabled={currentPage <= 1}
           >
             Trước
           </Button>
@@ -260,11 +230,11 @@ export default function BookPage() {
             variant="outline"
             size="sm"
             onClick={() => {
-              const newPage = page + 1;
+              const newPage = currentPage + 1;
               changePage(newPage);
               bookTable.nextPage(); // Không dùng khi manualPagination true và API call
             }}
-            disabled={page >= totalPages}
+            disabled={currentPage >= totalPages}
           >
             Sau
           </Button>

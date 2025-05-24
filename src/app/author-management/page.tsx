@@ -23,12 +23,12 @@ import AppTable from "@/components/common/app-table";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination";
 
-export default function AuthorPage() {
+export default function AuthorManagementPage() {
   const router = useRouter();
   const [authorData, setAuthorData] = useState<Author[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
 
-  const { page, limit, totalPages, changePage, changeLimit } = usePagination({
+  const { currentPage, limit, totalPages, changePage, changeLimit } = usePagination({
     totalItems: totalItems,
   });
 
@@ -59,20 +59,20 @@ export default function AuthorPage() {
 
   useEffect(() => {
     (async () => {
-      const { dataPart } = await AuthorServiceApi.getAll({ page, limit });
+      const { dataPart } = await AuthorServiceApi.getAll({ page: currentPage, limit });
       setAuthorData(dataPart.data);
       setTotalItems(dataPart.total_items);
     })();
 
     authorTable.resetRowSelection();
-  }, [page, totalPages, authorTable.getState().pagination.pageIndex]);
+  }, [currentPage, totalPages, authorTable.getState().pagination.pageIndex]);
 
   return (
     <div className="w-full">
       <AppHeader title="Tác giả" sub_title="Quản lý thông tin tác giả và tiểu sử" />
 
       <div className="flex items-center py-4">
-        <Button onClick={() => router.push(EAppRouter.AUTHOR_PAGE)}>Thêm tác giả</Button>
+        <Button onClick={() => router.push(EAppRouter.AUTHOR_MANGEMENT_PAGE)}>Thêm tác giả</Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -104,7 +104,7 @@ export default function AuthorPage() {
       <AppPagination
         totalSelects={authorTable.getSelectedRowModel().rows.length}
         totalPages={totalPages}
-        currentPage={page}
+        currentPage={currentPage}
         pageSize={limit}
         onPageChange={changePage}
         onPageSizeChange={changeLimit}

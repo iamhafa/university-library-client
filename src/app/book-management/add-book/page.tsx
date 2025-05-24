@@ -57,7 +57,7 @@ export default function AddBook() {
 
     if (results === "1") {
       toast.success("Tạo sách thành công!", { richColors: true });
-      router.push(EAppRouter.LIBRARY_BOOK_PAGE);
+      router.push(EAppRouter.BOOK_MANGEMENT_PAGE);
     } else {
       toast.error(error);
     }

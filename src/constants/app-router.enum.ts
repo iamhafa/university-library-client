@@ -1,6 +1,6 @@
 export enum EAppRouter {
   DASHBOARD = "/dashboard",
-  AUTHOR_PAGE = "/author",
-  LIBRARY_BOOK_PAGE = "/library-book",
-  LIBRARY_BOOK_PAGE_ADD_BOOK = "/library-book/add-book",
+  AUTHOR_MANGEMENT_PAGE = "/author-management",
+  BOOK_MANGEMENT_PAGE = "/book-management",
+  BOOK_MANAGEMENT_ADD_BOOK_PAGE = "/book-management/add-book",
 }
