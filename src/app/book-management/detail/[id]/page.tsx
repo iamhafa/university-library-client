@@ -19,7 +19,7 @@ export default function BookDetailPage() {
 
   useEffect(() => {
     async function getBookDetail(): Promise<void> {
-      const { dataPart } = await BookServiceApi.getOneById(id);
+      const { dataPart } = await BookServiceApi.getById(id);
 
       setBookDetail(dataPart);
     }
@@ -86,11 +86,7 @@ export default function BookDetailPage() {
             </div>
 
             <div className="flex items-center space-x-4 mb-6">
-              <Button
-                size="lg"
-                className="flex-grow md:flex-grow-0"
-                disabled={!bookDetail.quantity || bookDetail.quantity <= 0}
-              >
+              <Button size="lg" className="flex-grow md:flex-grow-0" disabled={!bookDetail.quantity || bookDetail.quantity <= 0}>
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 {bookDetail.quantity && bookDetail.quantity > 0 ? "Thêm vào giỏ hàng" : "Hết hàng"}
               </Button>

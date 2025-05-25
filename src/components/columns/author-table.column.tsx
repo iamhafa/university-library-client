@@ -32,7 +32,7 @@ export const authorTableColumns: ColumnDef<Author>[] = [
     header: "Tên tác giả",
     cell: ({ row }) => (
       <Link
-        href={`${EAppRouter.AUTHOR_PAGE}/${row.original.id}`}
+        href={`${EAppRouter.AUTHOR_MANGEMENT_PAGE}/${row.original.id}`}
         className="capitalize hover:underline hover:text-blue-600"
       >
         {row.original.name}

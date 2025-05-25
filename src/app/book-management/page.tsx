@@ -34,6 +34,7 @@ import AppHeader from "@/components/common/app-header";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
 import { getBookTableColumns } from "@/components/columns/book-table.column";
+import { toast } from "sonner";
 
 export default function BookManagementPage() {
   const router = useRouter();
@@ -56,20 +57,23 @@ export default function BookManagementPage() {
 
   // Định nghĩa hành động cho cột actions
   const handleEditBook = (book: Book) => {
-    // router.push(`${EAppRouter.LIBRARY_BOOK_PAGE_EDIT_BOOK}/${book.id}`); // Ví dụ
-    console.log("Edit book:", book.id);
-    alert(`Sửa sách: ${book.title}`);
+    router.push(`${EAppRouter.BOOK_MANAGEMENT_EDIT_PAGE}/${book.id}`); // Ví dụ
+    // console.log("Edit book:", book.id);
+    // alert(`Sửa sách: ${book.title}`);
   };
 
   const handleDeleteBook = async (book: Book) => {
     if (confirm(`Bạn có chắc chắn muốn xóa sách "${book.title}" không?`)) {
       try {
-        // await BookServiceApi.deleteById(book.id); // Gọi API xóa
-        console.log("Delete book:", book.id);
-        alert(`Xóa sách: ${book.title}`);
-        // Refetch data sau khi xóa
-        fetchBooks(currentPage, limit);
+        const { results } = await BookServiceApi.deleteById(book.id); // Gọi API xóa
+
+        if (results === "1") {
+          toast.success(`Xóa sách ${book.title} có ISBN ${book.ISBN} thành công.`, { richColors: true });
+          // Refetch data sau khi xóa
+          fetchBooks(currentPage, limit);
+        }
       } catch (error) {
+        toast.error("Lỗi khi xóa sách.");
         console.error("Lỗi khi xóa sách:", error);
         alert("Đã có lỗi xảy ra khi xóa sách.");
       }
@@ -132,7 +136,7 @@ export default function BookManagementPage() {
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => router.push(EAppRouter.BOOK_MANAGEMENT_ADD_BOOK_PAGE)}>Thêm sách</Button>
+          <Button onClick={() => router.push(EAppRouter.BOOK_MANAGEMENT_ADD_PAGE)}>Thêm sách</Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto h-9">

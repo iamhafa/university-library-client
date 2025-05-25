@@ -22,6 +22,11 @@ export type Book = TBaseEntity & {
 };
 
 export default abstract class BookServiceApi {
+  static async create(payload: Book): TApiResponse<Book> {
+    const { data } = await api.post("/book", payload);
+    return data;
+  }
+
   static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<Book[]> {
     const { data } = await api.get("/book", {
       params: {
@@ -32,13 +37,18 @@ export default abstract class BookServiceApi {
     return data;
   }
 
-  static async getOneById(id: string): TApiResponse<Book> {
+  static async getById(id: string): TApiResponse<Book> {
     const { data } = await api.get(`/book/${id}`);
     return data;
   }
 
-  static async create(payload: Book): TApiResponse<Book> {
-    const { data } = await api.post("/book", payload);
+  static async updateById(id: number | string, updateData: Partial<Book>): TApiResponse<Book> {
+    const { data } = await api.put(`/book/${id}`, updateData);
+    return data;
+  }
+
+  static async deleteById(id?: number): TApiResponse<Book> {
+    const { data } = await api.delete(`/book/${id}`);
     return data;
   }
 }

@@ -1,8 +1,9 @@
-import { Book } from "@/services/book.service";
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Book } from "@/services/book.service";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { currencyFormat } from "@/helpers/currency.format";
+import { EAppRouter } from "@/constants/app-router.enum";
 
 export const getBookTableColumns = (onEdit: (book: Book) => void, onDelete: (book: Book) => void): ColumnDef<Book>[] => [
   {
@@ -38,15 +40,20 @@ export const getBookTableColumns = (onEdit: (book: Book) => void, onDelete: (boo
   },
   {
     accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Tiêu đề
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("title")}</div>,
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Tiêu đề
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <Link
+        href={`${EAppRouter.BOOK_MANAGEMENT_DETAIL_PAGE}/${row.original.id}`}
+        className="capitalize hover:underline hover:text-blue-600"
+      >
+        {row.original.title}
+      </Link>
+    ),
   },
   {
     accessorKey: "ISBN",
