@@ -21,13 +21,14 @@ export const bookFormSchema = z.object({
     })
     .int("Thể loại không hợp lệ"),
 
-  author_id: z.coerce
-    .number({
-      required_error: "Vui lòng chọn tác giả",
-      invalid_type_error: "Tác giả không hợp lệ",
-    })
-    .int("Tác giả không hợp lệ")
-    .optional(),
+  author_ids: z.array(
+    z.coerce
+      .number({
+        required_error: "Vui lòng chọn tác giả",
+        invalid_type_error: "Tác giả không hợp lệ",
+      })
+      .int("Tác giả không hợp lệ")
+  ),
 
   publisher_id: z.coerce
     .number({

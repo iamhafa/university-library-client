@@ -18,6 +18,7 @@ import PublisherApiService, { Publisher } from "@/services/publisher.service";
 import BookServiceApi from "@/services/book.service";
 import { bookFormSchema, TBookFormValues } from "@/schemas/book-form.schema";
 import { EAppRouter } from "@/constants/app-router.enum";
+import MultiSelect from "@/components/customs/multi-select";
 
 export default function AddBook() {
   const router = useRouter();
@@ -104,7 +105,30 @@ export default function AddBook() {
           <ErrorMessage message={errors.genre_id?.message} />
         </div>
 
-        <div className="col-span-1">
+        {/* Author MultiSelect */}
+        <MultiSelect
+          control={control}
+          name={"author_ids"}
+          items={authorOptions}
+          label="Tác giả"
+          addButtonText="Thêm tác giả"
+          placeholder="Chọn tác giả..."
+          selectedLabel="Tác giả đã chọn:"
+          displayField="name"
+          maxSelections={3}
+          rules={{
+            required: "Vui lòng chọn ít nhất một tác giả",
+            validate: (value: number[]) => {
+              console.log("VALIDATE");
+
+              if (value.length === 0) return "Phải chọn ít nhất một tác giả";
+              if (value.length > 3) return "Chỉ được chọn tối đa 3 tác giả";
+              return true;
+            },
+          }}
+        />
+
+        {/* <div className="col-span-1">
           <Label htmlFor="author_id">Tác giả</Label>
           <Controller
             name="author_id"
@@ -127,7 +151,7 @@ export default function AddBook() {
             )}
           />
           <ErrorMessage message={errors.author_id?.message} />
-        </div>
+        </div> */}
 
         <div className="col-span-1">
           <Label htmlFor="publisher_id">Nhà xuất bản</Label>
