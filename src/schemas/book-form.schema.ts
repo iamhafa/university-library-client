@@ -26,7 +26,8 @@ export const bookFormSchema = z.object({
       required_error: "Vui lòng chọn tác giả",
       invalid_type_error: "Tác giả không hợp lệ",
     })
-    .int("Tác giả không hợp lệ"),
+    .int("Tác giả không hợp lệ")
+    .optional(),
 
   publisher_id: z.coerce
     .number({
@@ -71,8 +72,8 @@ export const bookFormSchema = z.object({
   publish_date: z
     .string()
     .nonempty({ message: "Ngày xuất bản là bắt buộc" })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, {
-      message: "Ngày xuất bản phải đúng định dạng YYYY-MM-DD",
+    .regex(/^\d{2}-\d{2}-\d{4}$/, {
+      message: "Ngày xuất bản phải đúng định dạng DD-MM-YYY",
     }),
 
   description: z.string({

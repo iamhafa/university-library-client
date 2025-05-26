@@ -7,6 +7,7 @@ import { ChevronDownIcon } from "lucide-react";
 import {
   ColumnDef,
   ColumnFiltersState,
+  RowSelectionState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -18,16 +19,10 @@ import {
 } from "@tanstack/react-table";
 
 // shadcn/ui components
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import BookServiceApi, { type Book } from "@/services/book.service";
 import AppHeader from "@/components/common/app-header";
@@ -35,34 +30,28 @@ import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
 import { getBookTableColumns } from "@/components/columns/book-table.column";
 import { toast } from "sonner";
+import AppPagination from "@/components/common/app-pagination";
 
 export default function BookManagementPage() {
   const router = useRouter();
   const [bookData, setBookData] = useState<Book[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
 
-  // Hook usePagination của bạn có thể vẫn dùng được, nhưng cách bạn truyền page/limit
-  // cho API và cách table xử lý pagination sẽ hơi khác một chút.
-  // TanStack Table có thể quản lý state pagination riêng (nếu không dùng manualPagination).
-  // Vì bạn dùng manualPagination, hook của bạn vẫn quan trọng.
   const { currentPage, limit, totalPages, changePage, changeLimit } = usePagination({ totalItems: totalItems });
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     created_at: false,
     updated_at: false,
   });
-  const [rowSelection, setRowSelection] = useState({});
 
-  // Định nghĩa hành động cho cột actions
-  const handleEditBook = (book: Book) => {
-    router.push(`${EAppRouter.BOOK_MANAGEMENT_EDIT_PAGE}/${book.id}`); // Ví dụ
-    // console.log("Edit book:", book.id);
-    // alert(`Sửa sách: ${book.title}`);
+  const handleEditBook = (book: Book): void => {
+    router.push(`${EAppRouter.BOOK_MANAGEMENT_EDIT_PAGE}/${book.id}`);
   };
 
-  const handleDeleteBook = async (book: Book) => {
+  const handleDeleteBook = async (book: Book): Promise<void> => {
     if (confirm(`Bạn có chắc chắn muốn xóa sách "${book.title}" không?`)) {
       try {
         const { results } = await BookServiceApi.deleteById(book.id); // Gọi API xóa
@@ -210,55 +199,15 @@ export default function BookManagementPage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {bookTable.getFilteredSelectedRowModel().rows.length} của {bookTable.getFilteredRowModel().rows.length} dòng được chọn.
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm">
-            Trang {currentPage} của {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newPage = currentPage - 1;
-              changePage(newPage);
-              // bookTable.previousPage() // Không dùng khi manualPagination true và API call
-            }}
-            disabled={currentPage <= 1}
-          >
-            Trước
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newPage = currentPage + 1;
-              changePage(newPage);
-              bookTable.nextPage(); // Không dùng khi manualPagination true và API call
-            }}
-            disabled={currentPage >= totalPages}
-          >
-            Sau
-          </Button>
-          {/* Select page size */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                {limit} / trang
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {[10, 20, 30, 40, 50].map((pageSize: number) => (
-                <DropdownMenuItem key={pageSize} onSelect={() => changeLimit(pageSize)}>
-                  {pageSize}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <AppPagination
+        totalSelects={bookTable.getFilteredSelectedRowModel().rows.length}
+        totalItems={totalItems}
+        page={currentPage}
+        limit={limit}
+        totalPages={totalPages}
+        onPageChange={(newPage: number) => changePage(newPage)}
+        onLimitChange={(newLimit: number) => changeLimit(newLimit)}
+      />
     </div>
   );
 }

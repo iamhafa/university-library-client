@@ -7,7 +7,7 @@ import { Genre } from "./genre.service";
 
 export type Book = TBaseEntity & {
   title: string;
-  author_id: number;
+  author_id?: number;
   genre_id: number;
   publisher_id: number;
   price: number;
