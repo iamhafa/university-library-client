@@ -2,7 +2,7 @@ import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AppSidebar } from "@/common/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/ui/sidebar";
+import { SidebarProvider } from "@/ui/sidebar";
 import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import "@/assets/css/globals.css";
 
@@ -29,10 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SidebarProvider>
           <AppSidebar />
           <Toaster position="top-right" />
-          <main className="w-full p-4">
-            <SidebarTrigger />
-            {children}
-          </main>
+          <main className="w-full p-4">{children}</main>
         </SidebarProvider>
       </body>
     </html>
