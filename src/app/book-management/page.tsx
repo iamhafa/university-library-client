@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-import BookServiceApi, { type Book } from "@/services/book.service";
+import BookServiceApi, { type TBook } from "@/services/book.service";
 import AppHeader from "@/components/common/app-header";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
@@ -34,7 +34,7 @@ import AppPagination from "@/components/common/app-pagination";
 
 export default function BookManagementPage() {
   const router = useRouter();
-  const [bookData, setBookData] = useState<Book[]>([]);
+  const [bookData, setBookData] = useState<TBook[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
 
   const { currentPage, limit, totalPages, changePage, changeLimit } = usePagination({ totalItems: totalItems });
@@ -47,11 +47,11 @@ export default function BookManagementPage() {
     updated_at: false,
   });
 
-  const handleEditBook = (book: Book): void => {
+  const handleEditBook = (book: TBook): void => {
     router.push(`${EAppRouter.BOOK_MANAGEMENT_EDIT_PAGE}/${book.id}`);
   };
 
-  const handleDeleteBook = async (book: Book): Promise<void> => {
+  const handleDeleteBook = async (book: TBook): Promise<void> => {
     if (confirm(`Bạn có chắc chắn muốn xóa sách "${book.title}" không?`)) {
       try {
         const { results } = await BookServiceApi.deleteById(book.id); // Gọi API xóa
@@ -69,9 +69,9 @@ export default function BookManagementPage() {
     }
   };
 
-  const bookTableColumns: ColumnDef<Book>[] = getBookTableColumns(handleEditBook, handleDeleteBook);
+  const bookTableColumns: ColumnDef<TBook>[] = getBookTableColumns(handleEditBook, handleDeleteBook);
 
-  const bookTable = useReactTable<Book>({
+  const bookTable = useReactTable<TBook>({
     data: bookData,
     columns: bookTableColumns,
     state: {

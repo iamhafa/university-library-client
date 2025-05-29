@@ -4,8 +4,15 @@ import { TApiPaginationResponse, TApiResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { Publisher } from "./publisher.service";
 import { Genre } from "./genre.service";
+import { Author } from "./author.service";
 
-export type Book = TBaseEntity & {
+type TBookAuthorItems = TBaseEntity & {
+  book_id: number;
+  author_id: number;
+  author: Author;
+};
+
+export type TBook = TBaseEntity & {
   title: string;
   author_ids: number[];
   genre_id: number;
@@ -19,15 +26,16 @@ export type Book = TBaseEntity & {
   description: string;
   genre?: Genre;
   publisher?: Publisher;
+  book_author_items?: TBookAuthorItems[];
 };
 
 export default abstract class BookServiceApi {
-  static async create(payload: Book): TApiResponse<Book> {
+  static async create(payload: TBook): TApiResponse<TBook> {
     const { data } = await api.post("/book", payload);
     return data;
   }
 
-  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<Book[]> {
+  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TBook[]> {
     const { data } = await api.get("/book", {
       params: {
         page,
@@ -37,17 +45,17 @@ export default abstract class BookServiceApi {
     return data;
   }
 
-  static async getById(id: string): TApiResponse<Book> {
+  static async getById(id: string): TApiResponse<TBook> {
     const { data } = await api.get(`/book/${id}`);
     return data;
   }
 
-  static async updateById(id: number | string, updateData: Partial<Book>): TApiResponse<Book> {
+  static async updateById(id: number | string, updateData: Partial<TBook>): TApiResponse<TBook> {
     const { data } = await api.put(`/book/${id}`, updateData);
     return data;
   }
 
-  static async deleteById(id?: number): TApiResponse<Book> {
+  static async deleteById(id?: number): TApiResponse<TBook> {
     const { data } = await api.delete(`/book/${id}`);
     return data;
   }

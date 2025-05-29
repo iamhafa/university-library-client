@@ -104,10 +104,10 @@ export default function AuthorManagementPage() {
       <AppPagination
         totalSelects={authorTable.getSelectedRowModel().rows.length}
         totalPages={totalPages}
-        currentPage={currentPage}
-        pageSize={limit}
+        page={currentPage}
+        limit={limit}
         onPageChange={changePage}
-        onPageSizeChange={changeLimit}
+        onLimitChange={changeLimit}
       />
     </div>
   );

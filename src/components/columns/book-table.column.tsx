@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Book } from "@/services/book.service";
+import { TBook } from "@/services/book.service";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -16,7 +16,7 @@ import {
 import { currencyFormat } from "@/helpers/currency.format";
 import { EAppRouter } from "@/constants/app-router.enum";
 
-export const getBookTableColumns = (onEdit: (book: Book) => void, onDelete: (book: Book) => void): ColumnDef<Book>[] => [
+export const getBookTableColumns = (onEdit: (book: TBook) => void, onDelete: (book: TBook) => void): ColumnDef<TBook>[] => [
   {
     id: "select",
     header: ({ table }) => (
