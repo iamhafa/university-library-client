@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NotFound from "@/app/not-found";
 import { BookOpen, CalendarDays, Tag, Edit, Trash2, ArrowLeft, Building } from "lucide-react";
@@ -9,9 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BookServiceApi, { TBook } from "@/services/book.service";
+import { EAppRouter } from "@/constants/app-router.enum";
+import AppHeader from "@/components/common/app-header";
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [bookDetail, setBookDetail] = useState<TBook>();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,15 +35,11 @@ export default function BookDetailPage() {
   }, [id]);
 
   const handleEdit = () => {
-    console.log("Edit book:", bookDetail?.title);
+    router.push(`${EAppRouter.BOOK_MANAGEMENT_EDIT_PAGE}/${id}`);
   };
 
   const handleDelete = () => {
     console.log("Delete book:", bookDetail?.title);
-  };
-
-  const handleGoBack = () => {
-    window.history.back();
   };
 
   if (isLoading) {
@@ -67,20 +66,10 @@ export default function BookDetailPage() {
   const stockStatus = bookDetail.quantity || 0;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="w-full space-y-4 p-4 md:p-6">
+      <AppHeader title="Chi tiết sách" sub_title="Thông tin chi tiết và quản lý sách" />
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={handleGoBack} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Quay lại
-          </Button>
-          <div>
-            <h1 className="text-2xl font-semibold">Chi tiết sách</h1>
-            <p className="text-sm text-gray-600">Thông tin chi tiết và quản lý sách</p>
-          </div>
-        </div>
-
+      <div className="flex items-center justify-end p-6 border-b">
         <div className="flex gap-2">
           <Button onClick={handleEdit} className="gap-2 bg-blue-600 hover:bg-blue-700">
             <Edit className="h-4 w-4" />

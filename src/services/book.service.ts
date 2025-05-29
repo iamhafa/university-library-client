@@ -6,7 +6,7 @@ import { Publisher } from "./publisher.service";
 import { Genre } from "./genre.service";
 import { Author } from "./author.service";
 
-type TBookAuthorItems = TBaseEntity & {
+export type TBookAuthorItems = TBaseEntity & {
   book_id: number;
   author_id: number;
   author: Author;

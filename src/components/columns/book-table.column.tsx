@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { TBook } from "@/services/book.service";
+import { TBook, TBookAuthorItems } from "@/services/book.service";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -56,31 +56,63 @@ export const getBookTableColumns = (onEdit: (book: TBook) => void, onDelete: (bo
     ),
   },
   {
+    id: "authors",
+    header: "Tác giả",
+    cell: ({ row }) => {
+      const authors = row.original.book_author_items as TBookAuthorItems[];
+
+      if (authors.length === 0) {
+        return <span className="text-gray-500 italic">Chưa có tác giả</span>;
+      }
+
+      // Nếu có nhiều tác giả, hiển thị dưới dạng badges
+      return (
+        <div className="flex flex-wrap gap-1">
+          {authors.map((authorItem: TBookAuthorItems) => (
+            <Badge key={authorItem.id} variant="secondary" className="text-xs">
+              {authorItem.author.name}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+    enableSorting: false, // Vì là nested data phức tạp
+  },
+  {
     accessorKey: "ISBN",
     header: "ISBN",
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Giá</div>,
+    header: ({ column }) => (
+      <div className="text-right">
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Giá
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    ),
     cell: ({ row }) => {
       const formatted: string = currencyFormat(row.getValue("price"));
       return <div className="text-right font-medium">{formatted}</div>;
     },
+    enableSorting: true,
   },
   {
     accessorKey: "quantity",
-    header: "Số lượng",
+    header: () => <div className="text-right">Số lượng</div>,
+    cell: ({ row }) => <div className="text-right">{row.original.quantity}</div>,
   },
   {
-    accessorKey: "genre.name", // Ví dụ nếu bạn muốn hiển thị tên thể loại
+    accessorKey: "genre.name",
     header: "Thể loại",
     cell: ({ row }) => {
-      const genre = row.original.genre; // Truy cập object genre gốc
+      const genre = row.original.genre;
       return <Badge>{genre?.name || "N/A"}</Badge>;
     },
   },
   {
-    accessorKey: "publisher.name", // Ví dụ nếu bạn muốn hiển thị tên NXB
+    accessorKey: "publisher.name",
     header: "Nhà xuất bản",
     cell: ({ row }) => {
       const publisher = row.original.publisher;
@@ -114,15 +146,14 @@ export const getBookTableColumns = (onEdit: (book: TBook) => void, onDelete: (bo
     enableSorting: false,
     enableHiding: false,
   },
-  // Thêm các cột ẩn mặc định nếu cần (giống như created_at, updated_at của bạn)
   {
     accessorKey: "created_at",
     header: "Ngày tạo",
-    enableHiding: true, // Cho phép ẩn
+    enableHiding: true,
   },
   {
     accessorKey: "updated_at",
     header: "Ngày cập nhật",
-    enableHiding: true, // Cho phép ẩn
+    enableHiding: true,
   },
 ];
