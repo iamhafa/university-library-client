@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Sách được mượn nhiều nhất
@@ -23,6 +23,7 @@ const TopBorrowedBooksChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Top Sách Được Mượn Nhiều Nhất</CardTitle>
+      <CardDescription>Thống kê 10 cuốn sách được mượn nhiều nhất trong thư viện</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
       <ResponsiveContainer width="100%" height="100%">
@@ -30,7 +31,7 @@ const TopBorrowedBooksChart = () => (
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey={"bookTitle"}
-            angle={-45}
+            angle={-40}
             textAnchor="end"
             height={80}
             tick={{ fill: "#4a5568", fontSize: 12 }}
@@ -49,7 +50,7 @@ const TopBorrowedBooksChart = () => (
             labelStyle={{ color: "#2d3748", fontWeight: "bold" }}
             itemStyle={{ color: "#2d3748" }}
           />
-          <Legend wrapperStyle={{ paddingTop: "10px", fontFamily: "Inter" }} />
+          <Legend wrapperStyle={{ paddingTop: "10px" }} />
           <Bar dataKey={"borrowCount"} name="Số lượt mượn" fill="#6366f1" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

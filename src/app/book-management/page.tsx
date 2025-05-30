@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Plus } from "lucide-react";
 
 import {
   ColumnDef,
@@ -125,7 +125,10 @@ export default function BookManagementPage() {
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => router.push(EAppRouter.BOOK_MANAGEMENT_ADD_PAGE)}>Thêm sách</Button>
+          <Button onClick={() => router.push(EAppRouter.BOOK_MANAGEMENT_ADD_PAGE)}>
+            <Plus />
+            Thêm sách
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto h-9">

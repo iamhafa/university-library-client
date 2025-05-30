@@ -22,7 +22,7 @@ export default function DashboardPage() {
         {/* Biểu đồ 1: Top Sách Được Mượn Nhiều Nhất */}
         <TopBorrowedBooksChart />
 
-        {/* Biểu đồ 4: Sách Khả Dụng vs. Đã Mượn */}
+        {/* Biểu đồ 2: Sách Khả Dụng vs. Đã Mượn */}
         <AvailableBorrowedChart />
 
         {/* Biểu đồ 3: Phân Loại Sách Theo Thể Loại */}

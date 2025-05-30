@@ -45,9 +45,9 @@ export default function UpdateBook() {
             quantity: dataPart.quantity,
             total_page: dataPart.total_page,
             ISBN: dataPart.ISBN,
-            image_url: dataPart.image_url,
+            image_url: dataPart.image_url ?? "",
             publish_date: dataPart.publish_date,
-            description: dataPart.description || "",
+            description: dataPart.description ?? "",
           };
 
           setDefaultValues(bookData);

@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Xu hướng mượn sách theo thời gian
@@ -25,6 +25,7 @@ const BorrowingTrendsChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Xu Hướng Mượn Sách Theo Thời Gian</CardTitle>
+      <CardDescription>Thống kê xu hướng số lượt mượn sách hàng tháng trong năm.</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
       <ResponsiveContainer width="100%" height="100%">

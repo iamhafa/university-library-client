@@ -10,9 +10,12 @@ export const bookFormSchema = z.object({
     })
     .nonempty("Tên sách không được để trống"),
 
-  image_url: z.string({
-    invalid_type_error: "Đường dẫn ảnh phải là chuỗi",
-  }),
+  image_url: z
+    .string({
+      required_error: "Đường dẫn ảnh không được để trống",
+      // invalid_type_error: "Đường dẫn ảnh phải là chuỗi",
+    })
+    .optional(),
 
   genre_id: z.coerce
     .number({
@@ -75,10 +78,13 @@ export const bookFormSchema = z.object({
     .nonempty({ message: "Ngày xuất bản là bắt buộc" })
     .regex(/^\d{2}-\d{2}-\d{4}$/, {
       message: "Ngày xuất bản phải đúng định dạng DD-MM-YYY",
-    }),
+    })
+    .optional(),
 
-  description: z.string({
-    required_error: "Mô tả là bắt buộc",
-    invalid_type_error: "Mô tả phải là chuỗi",
-  }),
+  description: z
+    .string({
+      required_error: "Mô tả là bắt buộc",
+      invalid_type_error: "Mô tả phải là chuỗi",
+    })
+    .optional(),
 });

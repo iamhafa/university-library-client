@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Số lượng sinh viên đang hoạt động
@@ -15,6 +15,7 @@ const ActiveUsersChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Số Lượng Sinh Viên Đang Hoạt Động</CardTitle>
+      <CardDescription>Thống kê số sinh viên hoạt động hàng tháng trong thư viện.</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
       <ResponsiveContainer width="100%" height="100%">

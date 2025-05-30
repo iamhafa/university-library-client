@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Phân loại sách theo thể loại
@@ -17,9 +17,10 @@ const BooksByCategoryChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Phân Loại Sách Theo Thể Loại</CardTitle>
+      <CardDescription>Thống kê tỉ lệ cuốn sách phân bố theo 6 thể loại chính</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
-      <ResponsiveContainer width="100%" height="80%">
+      <ResponsiveContainer width="100%" height="90%">
         <PieChart>
           <Pie
             data={booksByCategoryData}
@@ -46,7 +47,7 @@ const BooksByCategoryChart = () => (
             labelStyle={{ color: "#2d3748", fontWeight: "bold" }}
             itemStyle={{ color: "#2d3748" }}
           />
-          <Legend wrapperStyle={{ paddingTop: "10px" }} className="font-inter" />
+          <Legend className="font-inter" />
         </PieChart>
       </ResponsiveContainer>
     </CardContent>

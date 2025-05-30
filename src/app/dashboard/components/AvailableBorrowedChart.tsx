@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Số lượng sách khả dụng/đã mượn
@@ -15,6 +15,7 @@ const AvailableBorrowedChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Sách Khả Dụng vs. Đã Mượn</CardTitle>
+      <CardDescription>Thống kê số lượng sách tổng và sách đã mượn theo từng tháng</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
       <ResponsiveContainer width="100%" height="100%">

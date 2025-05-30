@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 // Dữ liệu giả định cho biểu đồ Tỷ lệ sách trễ hạn
@@ -14,9 +14,10 @@ const OverdueBooksChart = () => (
   <Card className="h-[32rem] flex flex-col">
     <CardHeader>
       <CardTitle>Tỷ Lệ Sách Trễ Hạn</CardTitle>
+      <CardDescription>Phân tích tỷ lệ sách trả đúng hạn và quá hạn trong thư viện.</CardDescription>
     </CardHeader>
     <CardContent className="flex-1">
-      <ResponsiveContainer width="100%" height="80%">
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={overdueBooksData}
@@ -43,7 +44,7 @@ const OverdueBooksChart = () => (
             labelStyle={{ color: "#2d3748", fontWeight: "bold" }}
             itemStyle={{ color: "#2d3748" }}
           />
-          <Legend wrapperStyle={{ paddingTop: "10px" }} className="font-inter" />
+          <Legend className="font-inter" />
         </PieChart>
       </ResponsiveContainer>
     </CardContent>
