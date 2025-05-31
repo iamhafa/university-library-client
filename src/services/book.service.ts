@@ -4,12 +4,12 @@ import { TApiPaginationResponse, TApiResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { Publisher } from "./publisher.service";
 import { Genre } from "./genre.service";
-import { Author } from "./author.service";
+import { TAuthor } from "./author.service";
 
 export type TBookAuthorItems = TBaseEntity & {
   book_id: number;
   author_id: number;
-  author: Author;
+  author: TAuthor;
 };
 
 export type TBook = TBaseEntity & {

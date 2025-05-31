@@ -61,7 +61,7 @@ const items = [
   },
   {
     title: "Tác giả",
-    url: EAppRouter.AUTHOR_MANGEMENT_PAGE,
+    url: EAppRouter.AUTHOR_MANAGEMENT_PAGE,
     icon: EditIcon,
     description: "Quản lý tác giả",
   },
@@ -73,7 +73,7 @@ const items = [
   },
   {
     title: "Sách cho mượn",
-    url: "#",
+    url: EAppRouter.BORROWING_MANAGEMENT_PAGE,
     icon: Calendar,
     description: "Theo dõi mượn sách",
   },
@@ -100,7 +100,7 @@ export function AppSidebar() {
             </div>
             {open && (
               <div className="flex flex-col">
-                <h1 className="text-lg font-semibold text-foreground">LibraryMS</h1>
+                <h1 className="text-lg font-semibold text-foreground">Library</h1>
                 <p className="text-xs text-muted-foreground">Quản lý thư viện</p>
               </div>
             )}

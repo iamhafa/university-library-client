@@ -1,12 +1,16 @@
-import Link from "next/link";
-import { Author } from "@/services/author.service";
-import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/ui/button";
-import { Checkbox } from "@/ui/checkbox";
-import { EAppRouter } from "@/constants/app-router.enum";
+// components/columns/author-table.column.tsx
 
-// define columns for Author page
-export const authorTableColumns: ColumnDef<Author>[] = [
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowUpDown, Edit, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { TAuthor } from "@/services/author.service";
+
+export const getAuthorTableColumns = (
+  onEdit: (author: TAuthor) => void,
+  onDelete: (author: TAuthor) => void
+): ColumnDef<TAuthor>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -14,39 +18,94 @@ export const authorTableColumns: ColumnDef<Author>[] = [
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        className="ml-4"
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="ml-4"
-      />
+      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
     ),
+    enableSorting: false,
+    enableHiding: false,
   },
   {
-    id: "name",
     accessorKey: "name",
-    header: "Tên tác giả",
-    cell: ({ row }) => (
-      <Link
-        href={`${EAppRouter.AUTHOR_MANGEMENT_PAGE}/${row.original.id}`}
-        className="capitalize hover:underline hover:text-blue-600"
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold"
       >
-        {row.original.name}
-      </Link>
+        Tên tác giả
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
     ),
+    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    id: "bio",
     accessorKey: "bio",
     header: "Tiểu sử",
-    cell: ({ row }) => <div className="line-clamp-2 max-w-[400px]">{row.original.bio}</div>,
+    cell: ({ row }) => {
+      const bio = row.getValue("bio") as string | null;
+      return (
+        <div className="max-w-[300px] truncate" title={bio || "Chưa có tiểu sử"}>
+          {bio || <span className="text-gray-400 italic">Chưa có tiểu sử</span>}
+        </div>
+      );
+    },
   },
   {
-    id: "edit",
-    cell: () => <Button>Chỉnh sửa</Button>,
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold"
+      >
+        Ngày tạo
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div>{row.getValue("created_at")}</div>,
+  },
+  {
+    accessorKey: "updated_at",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="h-auto p-0 font-semibold"
+      >
+        Ngày cập nhật
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div>{row.getValue("updated_at")}</div>,
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const author = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Mở menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onEdit(author)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Chỉnh sửa
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(author)} className="text-red-600">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Xóa
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];

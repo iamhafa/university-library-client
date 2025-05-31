@@ -24,17 +24,17 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-import AuthorServiceApi, { type TAuthor } from "@/services/author.service";
+import BorrowingServiceApi, { type TBorrowing } from "@/services/borrowing.service";
 import AppHeader from "@/components/common/app-header";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination";
-import { getAuthorTableColumns } from "@/components/columns/author-table.column";
+import { getBorrowingTableColumns } from "@/components/columns/borrowing-table.column";
 import { toast } from "sonner";
 import AppPagination from "@/components/common/app-pagination";
 
-export default function AuthorManagementPage() {
+export default function BorrowingManagementPage() {
   const router = useRouter();
-  const [authorData, setAuthorData] = useState<TAuthor[]>([]);
+  const [borrowingData, setBorrowingData] = useState<TBorrowing[]>([]);
   const [totalItems, setTotalItems] = useState<number>(0);
 
   const { currentPage, limit, totalPages, changePage, changeLimit } = usePagination({ totalItems: totalItems });
@@ -43,37 +43,65 @@ export default function AuthorManagementPage() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    member_id: false, // Ẩn ID thành viên vì đã có thông tin đầy đủ
     created_at: false,
     updated_at: false,
+    created_by: false,
+    updated_by: false,
   });
 
-  const handleEditAuthor = (author: TAuthor): void => {
-    router.push(`${EAppRouter.AUTHOR_MANAGEMENT_EDIT_PAGE}/${author.id}`);
+  const handleEditBorrowing = (borrowing: TBorrowing): void => {
+    router.push(`${EAppRouter.BORROWING_MANAGEMENT_EDIT_PAGE}/${borrowing.id}`);
   };
 
-  const handleDeleteAuthor = async (author: TAuthor): Promise<void> => {
-    if (confirm(`Bạn có chắc chắn muốn xóa tác giả "${author.name}" không?`)) {
+  const handleDeleteBorrowing = async (borrowing: TBorrowing): Promise<void> => {
+    if (confirm(`Bạn có chắc chắn muốn xóa bản ghi mượn sách ID ${borrowing.id} không?`)) {
       try {
-        const { results } = await AuthorServiceApi.deleteById(author.id);
+        const { results } = await BorrowingServiceApi.deleteById(borrowing.id);
 
         if (results === "1") {
-          toast.success(`Xóa tác giả ${author.name} thành công.`, { richColors: true });
+          toast.success(`Xóa bản ghi mượn sách ID ${borrowing.id} thành công.`, { richColors: true });
           // Refetch data sau khi xóa
-          fetchAuthors(currentPage, limit);
+          fetchBorrowings(currentPage, limit);
         }
       } catch (error) {
-        toast.error("Lỗi khi xóa tác giả.");
-        console.error("Lỗi khi xóa tác giả:", error);
-        alert("Đã có lỗi xảy ra khi xóa tác giả.");
+        toast.error("Lỗi khi xóa bản ghi mượn sách.");
+        console.error("Lỗi khi xóa bản ghi mượn sách:", error);
       }
     }
   };
 
-  const authorTableColumns: ColumnDef<TAuthor>[] = getAuthorTableColumns(handleEditAuthor, handleDeleteAuthor);
+  const handleReturnBook = async (borrowing: TBorrowing): Promise<void> => {
+    if (borrowing.status === "RETURNED") {
+      toast.warning("Sách này đã được trả.");
+      return;
+    }
 
-  const authorTable = useReactTable<TAuthor>({
-    data: authorData,
-    columns: authorTableColumns,
+    if (confirm(`Xác nhận trả sách cho bản ghi ID ${borrowing.id}?`)) {
+      try {
+        const { results } = await BorrowingServiceApi.returnBook(borrowing.id);
+
+        if (results === "1") {
+          toast.success(`Trả sách thành công cho bản ghi ID ${borrowing.id}.`, { richColors: true });
+          // Refetch data sau khi trả sách
+          fetchBorrowings(currentPage, limit);
+        }
+      } catch (error) {
+        toast.error("Lỗi khi trả sách.");
+        console.error("Lỗi khi trả sách:", error);
+      }
+    }
+  };
+
+  const borrowingTableColumns: ColumnDef<TBorrowing>[] = getBorrowingTableColumns(
+    handleEditBorrowing,
+    handleDeleteBorrowing,
+    handleReturnBook
+  );
+
+  const borrowingTable = useReactTable<TBorrowing>({
+    data: borrowingData,
+    columns: borrowingTableColumns,
     state: {
       sorting,
       columnVisibility,
@@ -93,41 +121,41 @@ export default function AuthorManagementPage() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const fetchAuthors = async (page: number, limit: number) => {
+  const fetchBorrowings = async (page: number, limit: number) => {
     try {
-      const { dataPart } = await AuthorServiceApi.getAll({ page, limit });
+      const { dataPart } = await BorrowingServiceApi.getAll({ page, limit });
 
-      setAuthorData(dataPart.data);
+      setBorrowingData(dataPart.data);
       setTotalItems(dataPart.total_items);
     } catch (error) {
-      console.error("Lỗi fetch tác giả:", error);
-      setAuthorData([]);
+      console.error("Lỗi fetch bản ghi mượn sách:", error);
+      setBorrowingData([]);
       setTotalItems(0);
     }
   };
 
   useEffect(() => {
-    fetchAuthors(currentPage, limit);
+    fetchBorrowings(currentPage, limit);
   }, [currentPage, limit]);
 
   return (
     <div className="w-full space-y-4 p-4 md:p-6">
-      <AppHeader title="Tác giả" sub_title="Quản lý thông tin tác giả và theo dõi hoạt động" />
+      <AppHeader title="Quản lý mượn sách" sub_title="Theo dõi các bản ghi mượn và trả sách của thành viên" />
 
       {/* Toolbar */}
       <div className="flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-            placeholder="Lọc theo tên tác giả..."
-            value={(authorTable.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) => authorTable.getColumn("name")?.setFilterValue(event.target.value)}
+            placeholder="Tìm kiếm theo tên thành viên..."
+            value={(borrowingTable.getColumn("member")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => borrowingTable.getColumn("member")?.setFilterValue(event.target.value)}
             className="h-9 w-[150px] lg:w-[250px]"
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Button onClick={() => router.push(EAppRouter.AUTHOR_MANAGEMENT_ADD_PAGE)}>
+          <Button onClick={() => router.push(EAppRouter.BORROWING_MANAGEMENT_ADD_PAGE)}>
             <Plus />
-            Thêm tác giả
+            Thêm mượn sách
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -136,7 +164,7 @@ export default function AuthorManagementPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {authorTable
+              {borrowingTable
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
                 .map((column) => {
@@ -147,14 +175,28 @@ export default function AuthorManagementPage() {
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
-                      {column.id === "name"
-                        ? "Tên tác giả"
-                        : column.id === "bio"
-                        ? "Tiểu sử"
+                      {column.id === "member_id"
+                        ? "ID Thành viên"
+                        : column.id === "member"
+                        ? "Thông tin thành viên"
+                        : column.id === "member.member_type"
+                        ? "Loại thành viên"
+                        : column.id === "borrowing_date"
+                        ? "Ngày mượn"
+                        : column.id === "due_date"
+                        ? "Ngày hết hạn"
+                        : column.id === "returned_date"
+                        ? "Ngày trả"
                         : column.id === "created_at"
                         ? "Ngày tạo"
                         : column.id === "updated_at"
                         ? "Ngày cập nhật"
+                        : column.id === "created_by"
+                        ? "Người tạo"
+                        : column.id === "updated_by"
+                        ? "Người cập nhật"
+                        : column.id === "status"
+                        ? "Trạng thái"
                         : column.id}
                     </DropdownMenuCheckboxItem>
                   );
@@ -164,11 +206,11 @@ export default function AuthorManagementPage() {
         </div>
       </div>
 
-      {/* Main authorTable */}
+      {/* Main borrowingTable */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {authorTable.getHeaderGroups().map((headerGroup) => (
+            {borrowingTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -181,8 +223,8 @@ export default function AuthorManagementPage() {
             ))}
           </TableHeader>
           <TableBody>
-            {authorTable.getRowModel().rows?.length ? (
-              authorTable.getRowModel().rows.map((row) => (
+            {borrowingTable.getRowModel().rows?.length ? (
+              borrowingTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
@@ -191,7 +233,7 @@ export default function AuthorManagementPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={authorTableColumns.length} className="h-24 text-center">
+                <TableCell colSpan={borrowingTableColumns.length} className="h-24 text-center">
                   Không có kết quả.
                 </TableCell>
               </TableRow>
@@ -202,7 +244,7 @@ export default function AuthorManagementPage() {
 
       {/* Pagination */}
       <AppPagination
-        totalSelects={authorTable.getFilteredSelectedRowModel().rows.length}
+        totalSelects={borrowingTable.getFilteredSelectedRowModel().rows.length}
         totalItems={totalItems}
         page={currentPage}
         limit={limit}

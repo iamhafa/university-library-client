@@ -14,9 +14,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "tiki.vn",
-        pathname: "/**",
+        protocol: "https", // allows both http and https
+        hostname: "**", // allows any domain
       },
     ],
   },

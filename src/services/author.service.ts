@@ -3,13 +3,13 @@ import PaginationDto from "@/helpers/pagination.dto";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
 
-export type Author = TBaseEntity & {
+export type TAuthor = TBaseEntity & {
   name: string;
   bio: string;
 };
 
 export default abstract class AuthorApiService {
-  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<Author[]> {
+  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TAuthor[]> {
     const { data } = await api.get("/author", {
       params: {
         page,
@@ -19,13 +19,18 @@ export default abstract class AuthorApiService {
     return data;
   }
 
-  static async searchByQuery(query: string): TApiResponse<Author> {
+  static async searchByQuery(query: string): TApiResponse<TAuthor> {
     const { data } = await api.get(`/author/search?q=${query}`);
     return data;
   }
 
-  static async getOneById(id: string): TApiResponse<Author> {
+  static async getOneById(id: string): TApiResponse<TAuthor> {
     const { data } = await api.get(`/author/${id}`);
+    return data;
+  }
+
+  static async deleteById(id?: number): TApiResponse<TAuthor> {
+    const { data } = await api.delete(`/author/${id}`);
     return data;
   }
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Edit, MoreHorizontal, Trash2 } from "lucide-react";
 import { TBook, TBookAuthorItems } from "@/services/book.service";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
@@ -121,8 +121,10 @@ export const getBookTableColumns = (onEdit: (book: TBook) => void, onDelete: (bo
   },
   {
     id: "actions",
+    enableHiding: false,
     cell: ({ row }) => {
       const book = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -132,19 +134,18 @@ export const getBookTableColumns = (onEdit: (book: TBook) => void, onDelete: (bo
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onEdit(book)}>Sửa</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(book.ISBN)}>Copy ISBN</DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onEdit(book)}>
+              <Edit className="mr-2 h-4 w-4" />
+              Chỉnh sửa
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDelete(book)} className="text-red-600">
+              <Trash2 className="mr-2 h-4 w-4" />
               Xóa
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
     },
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: "created_at",
