@@ -1,4 +1,7 @@
+import api from "@/config/api.config";
+import { TApiPaginationResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
+import PaginationDto from "@/helpers/pagination.dto";
 
 export type TMember = TBaseEntity & {
   first_name: string;
@@ -9,3 +12,15 @@ export type TMember = TBaseEntity & {
   address: string;
   enrollment_date: string;
 };
+
+export default class MemberServiceApi {
+  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TMember[]> {
+    const { data } = await api.get("/member", {
+      params: {
+        page,
+        limit,
+      },
+    });
+    return data;
+  }
+}

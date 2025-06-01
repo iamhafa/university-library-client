@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import ErrorMessage from "@/components/errors/error-message";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
-import AuthorApiService, { Author } from "@/services/author.service";
+import AuthorApiService, { TAuthor } from "@/services/author.service";
 import GenreApiService, { Genre } from "@/services/genre.service";
 import PublisherApiService, { Publisher } from "@/services/publisher.service";
 import { bookFormSchema, TBookFormValues } from "@/schemas/book-form.schema";
@@ -24,9 +24,9 @@ type Props = {
   isLoading?: boolean;
 };
 
-const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, submitButtonText, isLoading = false }) => {
+export const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, submitButtonText, isLoading = false }) => {
   const [genreOptions, setGenreOptions] = useState<Genre[]>([]);
-  const [authorOptions, setAuthorOptions] = useState<Author[]>([]);
+  const [authorOptions, setAuthorOptions] = useState<TAuthor[]>([]);
   const [publisherOptions, setPublisherOptions] = useState<Publisher[]>([]);
   const [optionsLoading, setOptionsLoading] = useState<boolean>(true);
 
@@ -221,5 +221,3 @@ const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, submitBut
     </form>
   );
 };
-
-export default BookForm;

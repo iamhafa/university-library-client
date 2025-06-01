@@ -4,10 +4,12 @@ import PaginationDto from "@/helpers/pagination.dto";
 import { TApiPaginationResponse, TApiResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { TMember } from "./member.service";
+import { BORROWING_STATUS } from "@/constants/borrowing.enum";
+import { TBorrowingFormValues } from "@/schemas/borrowing-form.schema";
 
 export type TBorrowing = TBaseEntity & {
   member_id: number;
-  status: "BORROWING" | "RETURNED";
+  status: BORROWING_STATUS;
   borrowing_date: string;
   due_date: string;
   returned_date?: string;
@@ -17,7 +19,7 @@ export type TBorrowing = TBaseEntity & {
 };
 
 export default abstract class BorrowingServiceApi {
-  static async create(payload: TBorrowing): TApiResponse<TBorrowing> {
+  static async create(payload: TBorrowingFormValues): TApiResponse<TBorrowing> {
     const { data } = await api.post("/borrowing", payload);
     return data;
   }

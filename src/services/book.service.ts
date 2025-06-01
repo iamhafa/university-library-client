@@ -19,11 +19,11 @@ export type TBook = TBaseEntity & {
   publisher_id: number;
   price: number;
   ISBN: string;
-  image_url: string;
   total_page: number;
   quantity: number;
-  publish_date: string;
-  description: string;
+  image_url?: string;
+  publish_date?: string;
+  description?: string;
   genre?: Genre;
   publisher?: Publisher;
   book_author_items?: TBookAuthorItems[];

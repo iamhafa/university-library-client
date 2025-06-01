@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppHeader from "@/components/common/app-header";
-import BookForm from "@/components/forms/book-form";
+import { BookForm } from "@/components/forms/book-form";
 import BookServiceApi from "@/services/book.service";
 import { TBookFormValues } from "@/schemas/book-form.schema";
 import { EAppRouter } from "@/constants/app-router.enum";
