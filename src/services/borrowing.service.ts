@@ -50,16 +50,7 @@ export default abstract class BorrowingServiceApi {
   }
 
   static async returnBook(id?: number | string): TApiResponse<TBorrowing> {
-    const { data } = await api.patch(`/borrowing/${id}/return`, {
-      returned_date: new Date()
-        .toLocaleDateString("vi-VN", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-        .replace(/\//g, "-"), // Format: dd-mm-yyyy
-      status: "RETURNED",
-    });
+    const { data } = await api.patch(`/borrowing/${id}/return`);
     return data;
   }
 }
