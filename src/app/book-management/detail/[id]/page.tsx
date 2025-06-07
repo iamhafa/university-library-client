@@ -4,13 +4,13 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NotFound from "@/app/not-found";
-import { BookOpen, CalendarDays, Tag, Edit, Trash2, ArrowLeft, Building } from "lucide-react";
+import { BookOpen, CalendarDays, Tag, Edit, Trash2, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BookServiceApi, { TBook } from "@/services/book.service";
 import { EAppRouter } from "@/constants/app-router.enum";
-import AppHeader from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/app-header";
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -89,7 +89,7 @@ export default function BookDetailPage() {
           <div className="w-98 flex-shrink-0">
             <div className="relative aspect-[3/4] w-full">
               <Image
-                src={bookDetail.image_url}
+                src={String(bookDetail.image_url)}
                 alt={`Bìa sách ${bookDetail.title}`}
                 className="object-cover rounded-lg border"
                 fill

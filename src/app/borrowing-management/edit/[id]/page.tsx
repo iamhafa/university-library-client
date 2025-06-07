@@ -1,106 +1,101 @@
 "use client";
 
-import { toast } from "sonner";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import AppHeader from "@/components/common/app-header";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { BorrowingForm } from "@/components/forms/borrowing.form";
-import BorrowingServiceApi from "@/services/borrowing.service";
-import { TBorrowingFormValues } from "@/schemas/borrowing-form.schema";
+import { TBorrowingFormValues, TBorrowingItemsFormValues } from "@/schemas/borrowing-form.schema";
+import BorrowingApiService, { TBorrowing } from "@/services/borrowing.service";
+import { BorrowingItemsService } from "@/services/borrowing-items.service";
 import { EAppRouter } from "@/constants/app-router.enum";
+import { AppHeader } from "@/components/common/app-header";
 
-export default function UpdateBorrowing() {
-  const router = useRouter();
+export default function EditBorrowingPage() {
   const { id: borrowingId } = useParams<{ id: string }>();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [borrowing, setBorrowing] = useState<TBorrowing>();
+  const [dataLoading, setDataLoading] = useState(true);
 
-  const [defaultValues, setDefaultValues] = useState<Partial<TBorrowingFormValues>>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  // Fetch borrowing data for editing
   useEffect(() => {
-    const fetchBorrowingData = async (): Promise<void> => {
-      if (!borrowingId) {
-        toast.error("Không tìm thấy ID phiếu mượn!");
-        router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
-        return;
-      }
-
+    const fetchBorrowing = async () => {
       try {
-        setIsLoading(true);
-        const { results, dataPart, error } = await BorrowingServiceApi.getById(borrowingId);
-
-        if (results === "1") {
-          // Set default values for the form
-          const borrowingData: Partial<TBorrowingFormValues> = {
-            member_id: dataPart.member_id,
-            status: dataPart.status,
-            borrowing_date: dataPart.borrowing_date,
-            due_date: dataPart.due_date,
-            returned_date: dataPart.returned_date ?? "",
-            created_by: dataPart.created_by ?? "",
-            updated_by: dataPart.updated_by ?? "",
-          };
-
-          setDefaultValues(borrowingData);
-        } else {
-          toast.error(error || "Không tìm thấy phiếu mượn!");
-          router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
-        }
+        setDataLoading(true);
+        const { dataPart } = await BorrowingApiService.getById(borrowingId);
+        setBorrowing(dataPart);
       } catch (error) {
-        console.error("Error fetching borrowing data:", error);
-        toast.error("Có lỗi xảy ra khi tải dữ liệu phiếu mượn!");
+        console.error("Error fetching borrowing:", error);
+        alert("Không thể tải thông tin lượt mượn. Vui lòng thử lại.");
         router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
       } finally {
-        setIsLoading(false);
+        setDataLoading(false);
       }
     };
 
-    fetchBorrowingData();
+    fetchBorrowing();
   }, [borrowingId, router]);
 
-  const handleSubmit = async (values: TBorrowingFormValues): Promise<void> => {
-    if (!borrowingId) {
-      toast.error("Không tìm thấy ID phiếu mượn để cập nhật!");
-      return;
-    }
-
+  const handleSubmit = async (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]) => {
     try {
-      setIsSubmitting(true);
-      const { results, error } = await BorrowingServiceApi.updateById(borrowingId, values);
+      setIsLoading(true);
+
+      // Update borrowing record
+      const { results } = await BorrowingApiService.updateById(borrowingId, values);
+
+      console.log(borrowingItems);
 
       if (results === "1") {
-        toast.success("Cập nhật phiếu mượn thành công!", { richColors: true });
-        router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
-      } else {
-        toast.error(error || "Cập nhật thất bại!");
+        toast.success("Update success");
       }
+
+      // Update borrowing items (bulk update)
+      if (borrowingItems.length > 0) {
+        const { results } = await BorrowingItemsService.updateBulk(borrowingId, borrowingItems);
+      }
+
+      // Show success message
+      alert("Cập nhật lượt mượn thành công!");
+
+      // Redirect to borrowing list
+      // router.push("/borrowing");
     } catch (error) {
       console.error("Error updating borrowing:", error);
-      toast.error("Có lỗi xảy ra khi cập nhật phiếu mượn!");
+      alert("Có lỗi xảy ra khi cập nhật lượt mượn. Vui lòng thử lại.");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  if (isLoading) {
+  if (dataLoading) {
     return (
-      <div className="mx-auto rounded-lg">
-        <AppHeader title="Cập nhật phiếu mượn" />
-        <div className="p-10">Đang tải dữ liệu phiếu mượn...</div>
+      <div className="container mx-auto py-8">
+        <div className="text-center">Đang tải dữ liệu...</div>
+      </div>
+    );
+  }
+
+  if (!borrowing) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="text-center text-red-500">Không tìm thấy thông tin lượt mượn.</div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto rounded-lg">
-      <AppHeader title="Cập nhật phiếu mượn" />
+    <div className="container mx-auto py-8">
+      <AppHeader title="Chỉnh sửa lượt mượt" />
       <BorrowingForm
         onSubmit={handleSubmit}
-        onCancel={() => router.back()}
-        defaultValues={defaultValues}
-        submitButtonText="Cập nhật phiếu mượn"
-        isLoading={isSubmitting}
+        onCancel={() => router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE)}
+        submitButtonText="Cập nhật lượt mượn"
+        isLoading={isLoading}
+        borrowingId={borrowingId}
+        defaultValues={{
+          member_id: borrowing.member_id,
+          borrowing_date: borrowing.borrowing_date,
+          due_date: borrowing.due_date,
+        }}
       />
     </div>
   );

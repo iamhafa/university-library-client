@@ -1,4 +1,4 @@
-// components/forms/BookForm.tsx
+// components/forms/book.form.tsx
 "use client";
 
 import { FC, useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import ErrorMessage from "@/components/errors/error-message";
+import { ErrorMessage } from "@/components/errors/error-message";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
 import AuthorApiService, { type TAuthor } from "@/services/author.service";
 import GenreApiService, { type TGenre } from "@/services/genre.service";

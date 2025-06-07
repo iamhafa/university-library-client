@@ -14,7 +14,15 @@ type Props = {
   onLimitChange: (newLimit: number) => void;
 };
 
-const AppPagination: FC<Props> = ({ totalSelects = 0, totalItems = 0, page, limit, totalPages, onPageChange, onLimitChange }) => {
+export const AppPagination: FC<Props> = ({
+  totalSelects = 0,
+  totalItems = 0,
+  page,
+  limit,
+  totalPages,
+  onPageChange,
+  onLimitChange,
+}) => {
   const pageSizes: number[] = [10, 20, 30, 40, 50];
 
   return (
@@ -50,5 +58,3 @@ const AppPagination: FC<Props> = ({ totalSelects = 0, totalItems = 0, page, limi
     </div>
   );
 };
-
-export default AppPagination;

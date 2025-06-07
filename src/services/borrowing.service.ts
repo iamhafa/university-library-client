@@ -36,22 +36,22 @@ export default abstract class BorrowingServiceApi {
     return data;
   }
 
-  static async getById(id: string): TApiResponse<TBorrowing> {
+  static async getById(id: string | number): TApiResponse<TBorrowing> {
     const { data } = await api.get(`${this.endpoint}/${id}`);
     return data;
   }
 
-  static async updateById(id: number | string, updateData: Partial<TBorrowing>): TApiResponse<TBorrowing> {
+  static async updateById(id: string | number, updateData: Partial<TBorrowing>): TApiResponse<TBorrowing> {
     const { data } = await api.put(`${this.endpoint}/${id}`, updateData);
     return data;
   }
 
-  static async deleteById(id?: number): TApiResponse<TBorrowing> {
+  static async deleteById(id?: string | number): TApiResponse<TBorrowing> {
     const { data } = await api.delete(`${this.endpoint}/${id}`);
     return data;
   }
 
-  static async returnBook(id?: number | string): TApiResponse<TBorrowing> {
+  static async returnBook(id?: string | number): TApiResponse<TBorrowing> {
     const { data } = await api.patch(`${this.endpoint}/${id}/return`);
     return data;
   }

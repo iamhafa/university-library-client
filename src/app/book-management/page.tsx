@@ -25,12 +25,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import BookServiceApi, { type TBook } from "@/services/book.service";
-import AppHeader from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/app-header";
 import { EAppRouter } from "@/constants/app-router.enum";
 import { usePagination } from "@/hooks/use-pagination"; // Hook này có thể cần điều chỉnh hoặc thay thế 1 phần
 import { getBookTableColumns } from "@/components/columns/book-table.column";
 import { toast } from "sonner";
-import AppPagination from "@/components/common/app-pagination";
+import { AppPagination } from "@/components/common/app-pagination";
 
 export default function BookManagementPage() {
   const router = useRouter();

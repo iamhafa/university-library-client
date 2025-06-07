@@ -1,4 +1,4 @@
-// components/forms/BorrowingItemsManager.tsx
+// components/forms/borrowing-items.form.tsx
 "use client";
 
 import { FC, useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import ErrorMessage from "@/components/errors/error-message";
+import { ErrorMessage } from "@/components/errors/error-message";
 import { TBorrowingItemsFormValues, borrowingItemsFormSchema } from "@/schemas/borrowing-form.schema";
 import { BorrowingItemsService, TBorrowingItems } from "@/services/borrowing-items.service";
 import BookApiService, { type TBook } from "@/services/book.service";
@@ -19,16 +19,15 @@ import BookApiService, { type TBook } from "@/services/book.service";
 type Props = {
   borrowingItems: TBorrowingItemsFormValues[];
   setBorrowingItems: (items: TBorrowingItemsFormValues[]) => void;
-  borrowingId?: number;
+  borrowingId?: string;
   disabled?: boolean;
 };
 
-export const BorrowingItemsManager: FC<Props> = ({ borrowingItems, setBorrowingItems, borrowingId, disabled = false }) => {
+export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItems, borrowingId, disabled = false }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [bookOptions, setBookOptions] = useState<TBook[]>([]);
   const [booksLoading, setBooksLoading] = useState(false);
-  const [existingItems, setExistingItems] = useState<TBorrowingItems[]>([]);
 
   const {
     register,
@@ -73,7 +72,6 @@ export const BorrowingItemsManager: FC<Props> = ({ borrowingItems, setBorrowingI
       if (borrowingId) {
         try {
           const { dataPart: items } = await BorrowingItemsService.getByBorrowingId(borrowingId);
-          setExistingItems(items);
 
           // Convert existing items to form values
           const formItems: TBorrowingItemsFormValues[] = items.map((item) => ({

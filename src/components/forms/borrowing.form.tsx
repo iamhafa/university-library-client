@@ -1,4 +1,4 @@
-// components/forms/BorrowingForm.tsx
+// components/forms/borrowing.form.tsx
 "use client";
 
 import { FC, useEffect, useRef, useState } from "react";
@@ -8,11 +8,11 @@ import { addDays, format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import ErrorMessage from "@/components/errors/error-message";
+import { ErrorMessage } from "@/components/errors/error-message";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
 import { borrowingFormSchema, TBorrowingFormValues, TBorrowingItemsFormValues } from "@/schemas/borrowing-form.schema";
 import MemberApiService, { type TMember } from "@/services/member.service";
-import { BorrowingItemsManager } from "./borrowing-items.form";
+import { BorrowingItemsForm } from "./borrowing-items.form";
 
 type Props = {
   onSubmit: (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]) => Promise<void>;
@@ -20,7 +20,7 @@ type Props = {
   defaultValues?: Partial<TBorrowingFormValues>;
   submitButtonText: string;
   isLoading?: boolean;
-  borrowingId?: number; // For edit mode
+  borrowingId?: string; // For edit mode
 };
 
 export const BorrowingForm: FC<Props> = ({
@@ -82,6 +82,8 @@ export const BorrowingForm: FC<Props> = ({
 
   const onValidSubmit = async (values: TBorrowingFormValues): Promise<void> => {
     // Validate that at least one book is selected
+    console.log(borrowingItems);
+
     if (borrowingItems.length === 0) {
       alert("Vui lòng thêm ít nhất một cuốn sách để mượn.");
       return;
@@ -170,7 +172,7 @@ export const BorrowingForm: FC<Props> = ({
         <div className="col-span-2">
           <div className="border-t pt-6 mt-6">
             <h3 className="text-lg font-semibold mb-4">Danh sách sách mượn</h3>
-            <BorrowingItemsManager
+            <BorrowingItemsForm
               borrowingItems={borrowingItems}
               setBorrowingItems={setBorrowingItems}
               borrowingId={borrowingId}

@@ -28,7 +28,7 @@ export const borrowingItemsFormSchema = z.object({
     required_error: "Vui lòng chọn sách",
     invalid_type_error: "ID sách phải là số",
   }),
-  borrowing_id: z.number({
+  borrowing_id: z.string({
     required_error: "ID phiếu mượn là bắt buộc",
     invalid_type_error: "ID phiếu mượn phải là số",
   }),

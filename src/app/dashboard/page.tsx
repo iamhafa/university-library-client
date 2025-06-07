@@ -1,6 +1,6 @@
 "use client";
 
-import AppHeader from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/app-header";
 import TopBorrowedBooksChart from "./components/TopBorrowedBooksChart";
 import BorrowingTrendsChart from "./components/BorrowingTrendsChart";
 import BooksByCategoryChart from "./components/BooksByCategoryChart";

@@ -4,7 +4,7 @@
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import AppHeader from "@/components/common/app-header";
+import { AppHeader } from "@/components/common/app-header";
 import { BookForm } from "@/components/forms/book.form";
 import BookServiceApi from "@/services/book.service";
 import { TBookFormValues } from "@/schemas/book-form.schema";
@@ -36,7 +36,12 @@ export default function AddBook() {
   return (
     <div className="mx-auto rounded-lg">
       <AppHeader title="Thêm sách mới" />
-      <BookForm onSubmit={handleSubmit} onCancel={() => router.back()} submitButtonText="Lưu sách" isLoading={isSubmitting} />
+      <BookForm
+        onSubmit={handleSubmit}
+        onCancel={() => router.push(EAppRouter.BOOK_MANGEMENT_PAGE)}
+        submitButtonText="Lưu sách"
+        isLoading={isSubmitting}
+      />
     </div>
   );
 }
