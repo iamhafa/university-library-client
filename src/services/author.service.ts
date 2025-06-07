@@ -9,8 +9,10 @@ export type TAuthor = TBaseEntity & {
 };
 
 export default abstract class AuthorApiService {
+  private static readonly endpoint: string = "/author";
+
   static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TAuthor[]> {
-    const { data } = await api.get("/author", {
+    const { data } = await api.get(this.endpoint, {
       params: {
         page,
         limit,
@@ -20,17 +22,17 @@ export default abstract class AuthorApiService {
   }
 
   static async searchByQuery(query: string): TApiResponse<TAuthor> {
-    const { data } = await api.get(`/author/search?q=${query}`);
+    const { data } = await api.get(`${this.endpoint}/search?q=${query}`);
     return data;
   }
 
   static async getOneById(id: string): TApiResponse<TAuthor> {
-    const { data } = await api.get(`/author/${id}`);
+    const { data } = await api.get(`${this.endpoint}/${id}`);
     return data;
   }
 
   static async deleteById(id?: number): TApiResponse<TAuthor> {
-    const { data } = await api.delete(`/author/${id}`);
+    const { data } = await api.delete(`${this.endpoint}/${id}`);
     return data;
   }
 }

@@ -2,8 +2,8 @@ import api from "@/config/api.config";
 import PaginationDto from "@/helpers/pagination.dto";
 import { TApiPaginationResponse, TApiResponse } from "@/types/api-reponse.type";
 import { TBaseEntity } from "@/types/base-entity.type";
-import { Publisher } from "./publisher.service";
-import { Genre } from "./genre.service";
+import { TPublisher } from "./publisher.service";
+import { TGenre } from "./genre.service";
 import { TAuthor } from "./author.service";
 
 export type TBookAuthorItems = TBaseEntity & {
@@ -24,19 +24,21 @@ export type TBook = TBaseEntity & {
   image_url?: string;
   publish_date?: string;
   description?: string;
-  genre?: Genre;
-  publisher?: Publisher;
+  genre?: TGenre;
+  publisher?: TPublisher;
   book_author_items?: TBookAuthorItems[];
 };
 
 export default abstract class BookServiceApi {
+  private static readonly endpoint: string = "/book";
+
   static async create(payload: TBook): TApiResponse<TBook> {
-    const { data } = await api.post("/book", payload);
+    const { data } = await api.post(this.endpoint, payload);
     return data;
   }
 
   static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TBook[]> {
-    const { data } = await api.get("/book", {
+    const { data } = await api.get(this.endpoint, {
       params: {
         page,
         limit,
@@ -46,17 +48,17 @@ export default abstract class BookServiceApi {
   }
 
   static async getById(id: string): TApiResponse<TBook> {
-    const { data } = await api.get(`/book/${id}`);
+    const { data } = await api.get(`${this.endpoint}/${id}`);
     return data;
   }
 
   static async updateById(id: number | string, updateData: Partial<TBook>): TApiResponse<TBook> {
-    const { data } = await api.put(`/book/${id}`, updateData);
+    const { data } = await api.put(`${this.endpoint}/${id}`, updateData);
     return data;
   }
 
   static async deleteById(id?: number): TApiResponse<TBook> {
-    const { data } = await api.delete(`/book/${id}`);
+    const { data } = await api.delete(`${this.endpoint}/${id}`);
     return data;
   }
 }

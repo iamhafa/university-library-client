@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppHeader from "@/components/common/app-header";
-import { BorrowingForm } from "@/components/forms/borrowing-form";
+import { BorrowingForm } from "@/components/forms/borrowing.form";
 import BorrowingServiceApi from "@/services/borrowing.service";
 import { TBorrowingFormValues } from "@/schemas/borrowing-form.schema";
 import { EAppRouter } from "@/constants/app-router.enum";
@@ -41,8 +41,6 @@ export default function UpdateBorrowing() {
             created_by: dataPart.created_by ?? "",
             updated_by: dataPart.updated_by ?? "",
           };
-
-          console.log(borrowingData);
 
           setDefaultValues(borrowingData);
         } else {

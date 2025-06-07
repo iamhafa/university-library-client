@@ -3,13 +3,15 @@ import PaginationDto from "@/helpers/pagination.dto";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
 
-export type Genre = TBaseEntity & {
+export type TGenre = TBaseEntity & {
   name: string;
 };
 
 export default abstract class GenreApiService {
-  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<Genre[]> {
-    const { data } = await api.get("/genre", {
+  private static readonly endpoint: string = "/genre";
+
+  static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TGenre[]> {
+    const { data } = await api.get(this.endpoint, {
       params: {
         page,
         limit,
@@ -18,8 +20,8 @@ export default abstract class GenreApiService {
     return data;
   }
 
-  static async getOneById(id: string): TApiResponse<Genre> {
-    const { data } = await api.get(`/genre/${id}`);
+  static async getOneById(id: string): TApiResponse<TGenre> {
+    const { data } = await api.get(`${this.endpoint}/${id}`);
     return data;
   }
 }

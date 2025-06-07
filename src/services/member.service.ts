@@ -14,8 +14,10 @@ export type TMember = TBaseEntity & {
 };
 
 export default class MemberServiceApi {
+  private static readonly endpoint: string = "/member";
+
   static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TMember[]> {
-    const { data } = await api.get("/member", {
+    const { data } = await api.get(this.endpoint, {
       params: {
         page,
         limit,

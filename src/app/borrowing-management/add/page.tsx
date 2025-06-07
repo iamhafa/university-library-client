@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AppHeader from "@/components/common/app-header";
 import { EAppRouter } from "@/constants/app-router.enum";
-import { BorrowingForm } from "@/components/forms/borrowing-form";
+import { BorrowingForm } from "@/components/forms/borrowing.form";
 import { TBorrowingFormValues } from "@/schemas/borrowing-form.schema";
 import BorrowingServiceApi from "@/services/borrowing.service";
 

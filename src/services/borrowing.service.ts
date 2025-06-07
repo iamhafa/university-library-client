@@ -19,13 +19,15 @@ export type TBorrowing = TBaseEntity & {
 };
 
 export default abstract class BorrowingServiceApi {
+  private static readonly endpoint: string = "/borrowing";
+
   static async create(payload: TBorrowingFormValues): TApiResponse<TBorrowing> {
-    const { data } = await api.post("/borrowing", payload);
+    const { data } = await api.post(this.endpoint, payload);
     return data;
   }
 
   static async getAll({ page, limit }: PaginationDto): TApiPaginationResponse<TBorrowing[]> {
-    const { data } = await api.get("/borrowing", {
+    const { data } = await api.get(this.endpoint, {
       params: {
         page,
         limit,
@@ -35,22 +37,22 @@ export default abstract class BorrowingServiceApi {
   }
 
   static async getById(id: string): TApiResponse<TBorrowing> {
-    const { data } = await api.get(`/borrowing/${id}`);
+    const { data } = await api.get(`${this.endpoint}/${id}`);
     return data;
   }
 
   static async updateById(id: number | string, updateData: Partial<TBorrowing>): TApiResponse<TBorrowing> {
-    const { data } = await api.put(`/borrowing/${id}`, updateData);
+    const { data } = await api.put(`${this.endpoint}/${id}`, updateData);
     return data;
   }
 
   static async deleteById(id?: number): TApiResponse<TBorrowing> {
-    const { data } = await api.delete(`/borrowing/${id}`);
+    const { data } = await api.delete(`${this.endpoint}/${id}`);
     return data;
   }
 
   static async returnBook(id?: number | string): TApiResponse<TBorrowing> {
-    const { data } = await api.patch(`/borrowing/${id}/return`);
+    const { data } = await api.patch(`${this.endpoint}/${id}/return`);
     return data;
   }
 }

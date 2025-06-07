@@ -10,9 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import ErrorMessage from "@/components/errors/error-message";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
-import AuthorApiService, { TAuthor } from "@/services/author.service";
-import GenreApiService, { Genre } from "@/services/genre.service";
-import PublisherApiService, { Publisher } from "@/services/publisher.service";
+import AuthorApiService, { type TAuthor } from "@/services/author.service";
+import GenreApiService, { type TGenre } from "@/services/genre.service";
+import PublisherApiService, { type TPublisher } from "@/services/publisher.service";
 import { bookFormSchema, TBookFormValues } from "@/schemas/book-form.schema";
 import MultiSelect from "@/components/customs/multi-select";
 
@@ -25,9 +25,9 @@ type Props = {
 };
 
 export const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, submitButtonText, isLoading = false }) => {
-  const [genreOptions, setGenreOptions] = useState<Genre[]>([]);
+  const [genreOptions, setGenreOptions] = useState<TGenre[]>([]);
   const [authorOptions, setAuthorOptions] = useState<TAuthor[]>([]);
-  const [publisherOptions, setPublisherOptions] = useState<Publisher[]>([]);
+  const [publisherOptions, setPublisherOptions] = useState<TPublisher[]>([]);
   const [optionsLoading, setOptionsLoading] = useState<boolean>(true);
 
   const {
@@ -109,7 +109,7 @@ export const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, su
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {genreOptions.map((genre: Genre) => (
+                  {genreOptions.map((genre: TGenre) => (
                     <SelectItem key={genre.id} value={String(genre.id)}>
                       {genre.name}
                     </SelectItem>
@@ -156,7 +156,7 @@ export const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, su
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {publisherOptions.map((publisher: Publisher) => (
+                  {publisherOptions.map((publisher: TPublisher) => (
                     <SelectItem key={publisher.id} value={String(publisher.id)}>
                       {publisher.name}
                     </SelectItem>
