@@ -12,7 +12,7 @@ export type TBorrowing = TBaseEntity & {
   status: BORROWING_STATUS;
   borrowing_date: string;
   due_date: string;
-  returned_date?: string;
+  returned_date?: string | null;
   created_by: string;
   updated_by?: string;
   member?: TMember;

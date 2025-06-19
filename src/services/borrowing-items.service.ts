@@ -31,29 +31,33 @@ export abstract class BorrowingItemsService {
   }
 
   static async getByBorrowingId(borrowingId: string): TApiResponse<TBorrowingItems[]> {
-    const { data } = await api.get(`borrowing/${borrowingId}/items`);
+    // Fixed endpoint - removed extra 'borrowing' prefix
+    const { data } = await api.get(`/borrowing/${borrowingId}/items`);
     return data;
   }
 
   static async createBulk(borrowingId: number, items: TBorrowingItemsFormValues[]): TApiResponse<TBorrowingItems[]> {
-    const payload = items.map((item: TBorrowingItemsFormValues) => ({
-      ...item,
+    const { data } = await api.post(`${this.endpoint}/bulk-create`, {
       borrowing_id: borrowingId,
-    }));
-
-    const { data } = await api.post(`${this.endpoint}/bulk-create`, { items: payload });
+      items,
+    });
     return data;
   }
 
   static async updateBulk(borrowingId: string, items: TBorrowingItemsFormValues[]): TApiResponse<TBorrowingItems[]> {
-    const payload = items.map((item: TBorrowingItemsFormValues) => ({
-      ...item,
-      borrowing_id: borrowingId,
-    }));
-
-    const { data } = await api.put(`${this.endpoint}/${borrowingId}/bulk-update`, {
-      items: payload,
+    const { data } = await api.put(`/borrowing/${borrowingId}/items/bulk-update`, {
+      items,
     });
+    return data;
+  }
+
+  static async deleteByBorrowingId(borrowingId: string): TApiResponse<void> {
+    const { data } = await api.delete(`/borrowing/${borrowingId}/items`);
+    return data;
+  }
+
+  static async deleteById(id: string | number): TApiResponse<void> {
+    const { data } = await api.delete(`${this.endpoint}/${id}`);
     return data;
   }
 }

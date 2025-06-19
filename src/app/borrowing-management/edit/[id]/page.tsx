@@ -11,8 +11,8 @@ import { EAppRouter } from "@/constants/app-router.enum";
 import { AppHeader } from "@/components/common/app-header";
 
 export default function EditBorrowingPage() {
-  const { id: borrowingId } = useParams<{ id: string }>();
   const router = useRouter();
+  const { id: borrowingId } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [borrowing, setBorrowing] = useState<TBorrowing>();
   const [dataLoading, setDataLoading] = useState(true);
@@ -25,42 +25,53 @@ export default function EditBorrowingPage() {
         setBorrowing(dataPart);
       } catch (error) {
         console.error("Error fetching borrowing:", error);
-        alert("Không thể tải thông tin lượt mượn. Vui lòng thử lại.");
+        toast.error("Không thể tải thông tin lượt mượn. Vui lòng thử lại.", { richColors: true });
         router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
       } finally {
         setDataLoading(false);
       }
     };
 
-    fetchBorrowing();
+    if (borrowingId) {
+      fetchBorrowing();
+    }
   }, [borrowingId, router]);
 
-  const handleSubmit = async (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]) => {
+  const handleSubmit = async (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]): Promise<void> => {
     try {
       setIsLoading(true);
 
-      // Update borrowing record
-      const { results } = await BorrowingApiService.updateById(borrowingId, values);
-
-      console.log(borrowingItems);
+      // Step 1: Update borrowing record
+      const { results, error, dataPart: updateBorrowing } = await BorrowingApiService.updateById(borrowingId, values);
 
       if (results === "1") {
-        toast.success("Update success");
+        setBorrowing(updateBorrowing);
+
+        // Step 2: Update borrowing items (bulk update)
+        if (borrowingItems.length > 0) {
+          try {
+            const { results } = await BorrowingItemsService.updateBulk(borrowingId, borrowingItems);
+
+            if (results !== "1") {
+              toast.error("Cập nhật thông tin lượt mượn thành công nhưng có lỗi khi cập nhật danh sách sách!");
+              return;
+            }
+          } catch (error) {
+            console.error("Error updating borrowing items:", error);
+            toast.error("Cập nhật thông tin lượt mượn thành công nhưng có lỗi khi cập nhật danh sách sách!");
+            return;
+          }
+        }
+
+        // Success
+        toast.success("Cập nhật lượt mượn thành công!", { richColors: true });
+      } else {
+        toast.error(error || "Cập nhật thông tin lượt mượn thất bại!");
+        return;
       }
-
-      // Update borrowing items (bulk update)
-      if (borrowingItems.length > 0) {
-        const { results } = await BorrowingItemsService.updateBulk(borrowingId, borrowingItems);
-      }
-
-      // Show success message
-      alert("Cập nhật lượt mượn thành công!");
-
-      // Redirect to borrowing list
-      // router.push("/borrowing");
     } catch (error) {
       console.error("Error updating borrowing:", error);
-      alert("Có lỗi xảy ra khi cập nhật lượt mượn. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra khi cập nhật lượt mượn. Vui lòng thử lại!");
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +95,7 @@ export default function EditBorrowingPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <AppHeader title="Chỉnh sửa lượt mượt" />
+      <AppHeader title="Chỉnh sửa lượt mượn" />
       <BorrowingForm
         onSubmit={handleSubmit}
         onCancel={() => router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE)}

@@ -18,7 +18,7 @@ export const borrowingFormSchema = z.object({
     .default(BORROWING_STATUS.BORROWING),
   borrowing_date: z.string().min(1, "Vui lòng nhập ngày mượn"),
   due_date: z.string().min(1, "Vui lòng nhập ngày hết hạn"),
-  returned_date: z.string().optional(),
+  returned_date: z.string().nullable().optional(),
   created_by: z.string().optional(),
   updated_by: z.string().optional(),
 });
@@ -28,10 +28,10 @@ export const borrowingItemsFormSchema = z.object({
     required_error: "Vui lòng chọn sách",
     invalid_type_error: "ID sách phải là số",
   }),
-  borrowing_id: z.string({
-    required_error: "ID phiếu mượn là bắt buộc",
-    invalid_type_error: "ID phiếu mượn phải là số",
-  }),
+  // borrowing_id: z.string({
+  //   required_error: "ID phiếu mượn là bắt buộc",
+  //   invalid_type_error: "ID phiếu mượn phải là số",
+  // }),
   quantity: z
     .number({
       required_error: "Vui lòng nhập số lượng",
@@ -48,6 +48,7 @@ export const borrowingItemsFormSchema = z.object({
     .string({
       invalid_type_error: "Ngày trả phải là chuỗi ngày hợp lệ",
     })
+    .nullable()
     .optional(),
   created_by: z.string().optional(),
   updated_by: z.string().optional(),

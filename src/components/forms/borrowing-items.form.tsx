@@ -2,9 +2,9 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { Plus, Trash2, Edit, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ErrorMessage } from "@/components/errors/error-message";
 import { TBorrowingItemsFormValues, borrowingItemsFormSchema } from "@/schemas/borrowing-form.schema";
-import { BorrowingItemsService, TBorrowingItems } from "@/services/borrowing-items.service";
+import { BorrowingItemsService } from "@/services/borrowing-items.service";
 import BookApiService, { type TBook } from "@/services/book.service";
 
 type Props = {
@@ -23,11 +23,25 @@ type Props = {
   disabled?: boolean;
 };
 
+// Loading Button Component
+const LoadingButton: FC<{ loading?: boolean; children: React.ReactNode; [key: string]: any }> = ({
+  loading = false,
+  children,
+  ...props
+}) => (
+  <Button {...props} disabled={props.disabled || loading}>
+    {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+    {loading ? "Đang xử lý..." : children}
+  </Button>
+);
+
 export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItems, borrowingId, disabled = false }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [bookOptions, setBookOptions] = useState<TBook[]>([]);
   const [booksLoading, setBooksLoading] = useState(false);
+  const [itemsLoading, setItemsLoading] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
 
   const {
     register,
@@ -43,7 +57,6 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
       book_id: undefined,
       quantity: 1,
       price: 0,
-      borrowing_id: borrowingId,
     },
   });
 
@@ -55,7 +68,8 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
       try {
         setBooksLoading(true);
         const { dataPart: books } = await BookApiService.getAll({});
-        setBookOptions(books.data);
+
+        setBookOptions(books.data || []);
       } catch (error) {
         console.error("Error fetching books:", error);
       } finally {
@@ -71,19 +85,29 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
     const fetchExistingItems = async () => {
       if (borrowingId) {
         try {
-          const { dataPart: items } = await BorrowingItemsService.getByBorrowingId(borrowingId);
+          setItemsLoading(true);
+          const { dataPart: items, error } = await BorrowingItemsService.getByBorrowingId(borrowingId);
+
+          if (error) {
+            console.error("Error fetching existing borrowing items:", error);
+            return;
+          }
 
           // Convert existing items to form values
-          const formItems: TBorrowingItemsFormValues[] = items.map((item) => ({
+          const formItems: TBorrowingItemsFormValues[] = (items || []).map((item) => ({
+            id: item.id,
             book_id: item.book_id,
             quantity: item.quantity,
             price: item.price,
-            borrowing_id: item.borrowing_id,
             returned_date: item.returned_date,
           }));
+          console.log("formItems", formItems);
+
           setBorrowingItems(formItems);
         } catch (error) {
           console.error("Error fetching existing borrowing items:", error);
+        } finally {
+          setItemsLoading(false);
         }
       }
     };
@@ -101,25 +125,58 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
     }
   }, [selectedBookId, bookOptions, setValue]);
 
-  const handleAddItem = (data: TBorrowingItemsFormValues) => {
-    if (editingIndex !== null) {
-      // Update existing item
-      const updatedItems = [...borrowingItems];
-      updatedItems[editingIndex] = data;
-      setBorrowingItems(updatedItems);
-      setEditingIndex(null);
-    } else {
-      // Add new item
-      setBorrowingItems([...borrowingItems, data]);
-    }
+  // Check if book is already added
+  const isBookAlreadyAdded = (bookId: number, currentIndex?: number): boolean => {
+    return borrowingItems.some((item, index) => item.book_id === bookId && index !== currentIndex);
+  };
 
-    reset();
-    setIsDialogOpen(false);
+  const handleInvalidAddItem = (errors: FieldErrors<TBorrowingItemsFormValues>): void => {
+    console.error("Error adding/updating item:", errors);
+    alert("Có lỗi xảy ra khi thêm/cập nhật sách!");
+  };
+
+  const handleValidAddItem = async (data: TBorrowingItemsFormValues) => {
+    try {
+      setFormSubmitting(true);
+
+      // Check for duplicate books
+      if (editingIndex === null && isBookAlreadyAdded(data.book_id)) {
+        alert("Cuốn sách này đã được thêm vào danh sách mượn!");
+        return;
+      }
+
+      if (editingIndex !== null && isBookAlreadyAdded(data.book_id, editingIndex)) {
+        alert("Cuốn sách này đã được thêm vào danh sách mượn!");
+        return;
+      }
+
+      if (editingIndex !== null) {
+        console.log(borrowingItems);
+
+        // Update existing item
+        const updatedItems = [...borrowingItems];
+        updatedItems[editingIndex] = data;
+        setBorrowingItems(updatedItems);
+        setEditingIndex(null);
+      } else {
+        // Add new item
+        setBorrowingItems([...borrowingItems, data]);
+      }
+
+      reset();
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding/updating item:", error);
+      alert("Có lỗi xảy ra khi thêm/cập nhật sách!");
+    } finally {
+      setFormSubmitting(false);
+    }
   };
 
   const handleEditItem = (index: number) => {
     const item = borrowingItems[index];
     setEditingIndex(index);
+    console.log("handleEditItem", item);
 
     // Set form values
     Object.entries(item).forEach(([key, value]) => {
@@ -130,8 +187,13 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
   };
 
   const handleDeleteItem = (index: number) => {
-    const updatedItems = borrowingItems.filter((_, i) => i !== index);
-    setBorrowingItems(updatedItems);
+    const book = borrowingItems[index];
+    const bookTitle = getBookTitle(book.book_id);
+
+    if (confirm(`Bạn có chắc chắn muốn xóa "${bookTitle}" khỏi danh sách mượn?`)) {
+      const updatedItems = borrowingItems.filter((_, i) => i !== index);
+      setBorrowingItems(updatedItems);
+    }
   };
 
   const getBookTitle = (bookId: number): string => {
@@ -145,23 +207,39 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
     reset();
   };
 
+  const calculateTotal = (): number => {
+    return borrowingItems.reduce((total, item) => total + item.quantity * item.price, 0);
+  };
+
+  // Show loading state while fetching existing items
+  if (itemsLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+          <span>Đang tải danh sách sách...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button type="button" variant="outline" disabled={disabled}>
+          <Button type="button" variant="outline" disabled={disabled || booksLoading}>
             <Plus className="h-4 w-4 mr-2" />
-            Thêm sách
+            {booksLoading ? "Đang tải..." : "Thêm sách"}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{editingIndex !== null ? "Chỉnh sửa sách" : "Thêm sách mới"}</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit(handleAddItem)} className="space-y-4">
+          <form onSubmit={handleSubmit(handleValidAddItem, handleInvalidAddItem)} className="space-y-4">
             <div>
-              <Label htmlFor="book_id">Chọn sách</Label>
+              <Label htmlFor="book_id">Chọn sách *</Label>
               <Controller
                 name="book_id"
                 control={control}
@@ -169,10 +247,10 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
                   <Select
                     onValueChange={(value) => field.onChange(parseInt(value))}
                     value={field.value?.toString()}
-                    disabled={booksLoading}
+                    disabled={booksLoading || formSubmitting}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Chọn sách" />
+                      <SelectValue placeholder={booksLoading ? "Đang tải sách..." : "Chọn sách"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -195,22 +273,24 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
             </div>
 
             <div>
-              <Label htmlFor="quantity">Số lượng</Label>
-              <Input id="quantity" type="number" min="1" {...register("quantity", { valueAsNumber: true })} />
+              <Label htmlFor="quantity">Số lượng *</Label>
+              <Input id="quantity" min="1" {...register("quantity", { valueAsNumber: true })} disabled={formSubmitting} />
               <ErrorMessage message={errors.quantity?.message} />
             </div>
 
             <div>
-              <Label htmlFor="price">Giá thuê</Label>
-              <Input id="price" type="number" min="0" step="0.01" {...register("price", { valueAsNumber: true })} />
+              <Label htmlFor="price">Giá thuê *</Label>
+              <Input id="price" min="0" {...register("price", { valueAsNumber: true })} disabled={formSubmitting} />
               <ErrorMessage message={errors.price?.message} />
             </div>
 
             <div className="flex justify-end space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={handleDialogClose}>
+              <Button type="button" variant="outline" onClick={handleDialogClose} disabled={formSubmitting}>
                 Hủy
               </Button>
-              <Button type="submit">{editingIndex !== null ? "Cập nhật" : "Thêm"}</Button>
+              <LoadingButton type="submit" loading={formSubmitting}>
+                {editingIndex !== null ? "Cập nhật" : "Thêm"}
+              </LoadingButton>
             </div>
           </form>
         </DialogContent>
@@ -231,7 +311,7 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
             </TableHeader>
             <TableBody>
               {borrowingItems.map((item, index) => (
-                <TableRow key={index}>
+                <TableRow key={`${item.book_id}-${index}`}>
                   <TableCell>
                     <div className="font-medium">{getBookTitle(item.book_id)}</div>
                   </TableCell>
@@ -240,10 +320,24 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
                   <TableCell className="font-medium">{(item.quantity * item.price).toLocaleString("vi-VN")}đ</TableCell>
                   <TableCell>
                     <div className="flex space-x-1">
-                      <Button type="button" variant="ghost" size="sm" onClick={() => handleEditItem(index)} disabled={disabled}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditItem(index)}
+                        disabled={disabled}
+                        title="Chỉnh sửa"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => handleDeleteItem(index)} disabled={disabled}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteItem(index)}
+                        disabled={disabled}
+                        title="Xóa"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -256,17 +350,20 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
           {/* Total Summary */}
           <div className="p-4 border-t bg-gray-50">
             <div className="flex justify-between items-center">
-              <span className="font-medium">Tổng cộng:</span>
-              <span className="text-lg font-bold">
-                {borrowingItems.reduce((total, item) => total + item.quantity * item.price, 0).toLocaleString("vi-VN")}đ
-              </span>
+              <span className="font-medium">Tổng cộng ({borrowingItems.length} cuốn sách):</span>
+              <span className="text-lg font-bold">{calculateTotal().toLocaleString("vi-VN")}đ</span>
             </div>
           </div>
         </div>
       )}
 
       {borrowingItems.length === 0 && (
-        <div className="text-center py-8 text-gray-500">Chưa có sách nào được thêm. Nhấn "Thêm sách" để bắt đầu.</div>
+        <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
+          <div className="space-y-2">
+            <p>Chưa có sách nào được thêm vào danh sách mượn.</p>
+            <p className="text-sm">Nhấn nút "Thêm sách" để bắt đầu.</p>
+          </div>
+        </div>
       )}
     </div>
   );
