@@ -1,9 +1,9 @@
-export function currencyFormat(value: string): string {
-  const amount: number = parseFloat(value);
+export function currencyFormat(value: number): string {
+  // const amount: number = parseFloat(value);
   const formatted: string = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
-  }).format(amount);
+  }).format(value);
 
   return formatted;
 }

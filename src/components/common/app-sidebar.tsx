@@ -1,9 +1,7 @@
 "use client";
 
 import {
-  Book,
   Calendar,
-  Search,
   Settings,
   ActivitySquareIcon,
   EditIcon,
@@ -190,7 +188,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start gap-3 h-12 px-3 hover:bg-accent">
                   <Avatar className="h-8 w-8 flex-shrink-0">
-                    <AvatarImage src="/avatar.jpg" alt="User" />
+                    <AvatarImage src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" />
                     <AvatarFallback className="bg-primary text-primary-foreground text-sm">AD</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start text-left min-w-0 flex-1">

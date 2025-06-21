@@ -80,7 +80,7 @@ export const BorrowingForm: FC<Props> = ({
     }
   }, [defaultValues, setValue]);
 
-  const onValidSubmit = async (values: TBorrowingFormValues): Promise<void> => {
+  const onValidSubmit = async (borrowing: TBorrowingFormValues): Promise<void> => {
     // Validate that at least one book is selected
     console.log(borrowingItems);
 
@@ -97,7 +97,7 @@ export const BorrowingForm: FC<Props> = ({
       return;
     }
 
-    await onSubmit(values, borrowingItems);
+    await onSubmit(borrowing, borrowingItems);
   };
 
   const onInvalidSubmit = (errors: FieldErrors<TBorrowingFormValues>): void => {

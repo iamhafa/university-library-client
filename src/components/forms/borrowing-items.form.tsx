@@ -13,8 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ErrorMessage } from "@/components/errors/error-message";
 import { TBorrowingItemsFormValues, borrowingItemsFormSchema } from "@/schemas/borrowing-form.schema";
-import { BorrowingItemsService } from "@/services/borrowing-items.service";
+import { BorrowingItemsService, TBorrowingItems } from "@/services/borrowing-items.service";
 import BookApiService, { type TBook } from "@/services/book.service";
+import { currencyFormat } from "@/helpers/currency.format";
 
 type Props = {
   borrowingItems: TBorrowingItemsFormValues[];
@@ -44,23 +45,20 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
   const [formSubmitting, setFormSubmitting] = useState(false);
 
   const {
-    register,
     control,
+    register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<TBorrowingItemsFormValues>({
     resolver: zodResolver(borrowingItemsFormSchema),
-    defaultValues: {
-      book_id: undefined,
-      quantity: 1,
-      price: 0,
-    },
+    // defaultValues: {
+    //   book_id: undefined,
+    //   quantity: 1,
+    //   price: 0,
+    // },
   });
-
-  const selectedBookId = watch("book_id");
 
   // Fetch books for selection
   useEffect(() => {
@@ -94,14 +92,13 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
           }
 
           // Convert existing items to form values
-          const formItems: TBorrowingItemsFormValues[] = (items || []).map((item) => ({
+          const formItems: TBorrowingItemsFormValues[] = items.map((item: TBorrowingItems) => ({
             id: item.id,
             book_id: item.book_id,
             quantity: item.quantity,
             price: item.price,
             returned_date: item.returned_date,
           }));
-          console.log("formItems", formItems);
 
           setBorrowingItems(formItems);
         } catch (error) {
@@ -114,16 +111,6 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
 
     fetchExistingItems();
   }, [borrowingId, setBorrowingItems]);
-
-  // Auto-fill price when book is selected
-  useEffect(() => {
-    if (selectedBookId) {
-      const selectedBook = bookOptions.find((book) => book.id === selectedBookId);
-      if (selectedBook) {
-        setValue("price", selectedBook.price || 0);
-      }
-    }
-  }, [selectedBookId, bookOptions, setValue]);
 
   // Check if book is already added
   const isBookAlreadyAdded = (bookId: number, currentIndex?: number): boolean => {
@@ -145,18 +132,14 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
         return;
       }
 
-      if (editingIndex !== null && isBookAlreadyAdded(data.book_id, editingIndex)) {
-        alert("Cuốn sách này đã được thêm vào danh sách mượn!");
-        return;
-      }
-
       if (editingIndex !== null) {
-        console.log(borrowingItems);
-
         // Update existing item
         const updatedItems = [...borrowingItems];
         updatedItems[editingIndex] = data;
         setBorrowingItems(updatedItems);
+        console.log("updatedItems", updatedItems);
+        console.log("borrowingItems", borrowingItems);
+
         setEditingIndex(null);
       } else {
         // Add new item
@@ -176,7 +159,6 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
   const handleEditItem = (index: number) => {
     const item = borrowingItems[index];
     setEditingIndex(index);
-    console.log("handleEditItem", item);
 
     // Set form values
     Object.entries(item).forEach(([key, value]) => {
@@ -259,7 +241,7 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
                             <div className="flex flex-col">
                               <span className="font-medium">{book.title}</span>
                               <span className="text-sm text-gray-500">
-                                ISBN: {book.ISBN} • Giá: {book.price?.toLocaleString("vi-VN")}đ
+                                ISBN: {book.ISBN} • Giá: {currencyFormat(book.price)}
                               </span>
                             </div>
                           </SelectItem>
@@ -316,8 +298,8 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
                     <div className="font-medium">{getBookTitle(item.book_id)}</div>
                   </TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.price.toLocaleString("vi-VN")}đ</TableCell>
-                  <TableCell className="font-medium">{(item.quantity * item.price).toLocaleString("vi-VN")}đ</TableCell>
+                  <TableCell>{currencyFormat(item.price)}</TableCell>
+                  <TableCell className="font-medium">{currencyFormat(item.quantity * item.price)}</TableCell>
                   <TableCell>
                     <div className="flex space-x-1">
                       <Button
@@ -351,7 +333,7 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
           <div className="p-4 border-t bg-gray-50">
             <div className="flex justify-between items-center">
               <span className="font-medium">Tổng cộng ({borrowingItems.length} cuốn sách):</span>
-              <span className="text-lg font-bold">{calculateTotal().toLocaleString("vi-VN")}đ</span>
+              <span className="text-lg font-bold">{currencyFormat(calculateTotal())}</span>
             </div>
           </div>
         </div>

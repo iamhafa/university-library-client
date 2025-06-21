@@ -7,16 +7,7 @@ import { TMember } from "./member.service";
 import { BORROWING_STATUS } from "@/constants/borrowing.enum";
 import { TBorrowingFormValues } from "@/schemas/borrowing-form.schema";
 
-export type TBorrowing = TBaseEntity & {
-  member_id: number;
-  status: BORROWING_STATUS;
-  borrowing_date: string;
-  due_date: string;
-  returned_date?: string | null;
-  created_by: string;
-  updated_by?: string;
-  member?: TMember;
-};
+export type TBorrowing = TBaseEntity & TBorrowingFormValues;
 
 export default abstract class BorrowingServiceApi {
   private static readonly endpoint: string = "/borrowing";

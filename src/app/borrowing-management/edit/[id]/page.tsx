@@ -37,12 +37,14 @@ export default function EditBorrowingPage() {
     }
   }, [borrowingId, router]);
 
-  const handleSubmit = async (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]): Promise<void> => {
+  const handleSubmit = async (borrowing: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]): Promise<void> => {
+    console.log(borrowingItems);
+
     try {
       setIsLoading(true);
 
       // Step 1: Update borrowing record
-      const { results, error, dataPart: updateBorrowing } = await BorrowingApiService.updateById(borrowingId, values);
+      const { results, error, dataPart: updateBorrowing } = await BorrowingApiService.updateById(borrowingId, borrowing);
 
       if (results === "1") {
         setBorrowing(updateBorrowing);

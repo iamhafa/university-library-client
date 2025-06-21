@@ -50,6 +50,4 @@ export const borrowingItemsFormSchema = z.object({
     })
     .nullable()
     .optional(),
-  created_by: z.string().optional(),
-  updated_by: z.string().optional(),
 });

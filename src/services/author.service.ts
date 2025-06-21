@@ -2,11 +2,9 @@ import api from "@/config/api.config";
 import PaginationDto from "@/helpers/pagination.dto";
 import { TBaseEntity } from "@/types/base-entity.type";
 import { TApiResponse, TApiPaginationResponse } from "@/types/api-reponse.type";
+import { TAuthorFormValues } from "@/schemas/author-form.schema";
 
-export type TAuthor = TBaseEntity & {
-  name: string;
-  bio: string;
-};
+export type TAuthor = TBaseEntity & TAuthorFormValues;
 
 export default abstract class AuthorApiService {
   private static readonly endpoint: string = "/author";

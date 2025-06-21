@@ -5,6 +5,7 @@ import { TBaseEntity } from "@/types/base-entity.type";
 import { TPublisher } from "./publisher.service";
 import { TGenre } from "./genre.service";
 import { TAuthor } from "./author.service";
+import { TBookFormValues } from "@/schemas/book-form.schema";
 
 export type TBookAuthorItems = TBaseEntity & {
   book_id: number;
@@ -12,22 +13,12 @@ export type TBookAuthorItems = TBaseEntity & {
   author: TAuthor;
 };
 
-export type TBook = TBaseEntity & {
-  title: string;
-  author_ids: number[];
-  genre_id: number;
-  publisher_id: number;
-  price: number;
-  ISBN: string;
-  total_page: number;
-  quantity: number;
-  image_url?: string;
-  publish_date?: string;
-  description?: string;
-  genre?: TGenre;
-  publisher?: TPublisher;
-  book_author_items?: TBookAuthorItems[];
-};
+export type TBook = TBaseEntity &
+  TBookFormValues & {
+    genre?: TGenre;
+    publisher?: TPublisher;
+    book_author_items?: TBookAuthorItems[];
+  };
 
 export default abstract class BookServiceApi {
   private static readonly endpoint: string = "/book";
