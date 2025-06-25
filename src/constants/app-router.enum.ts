@@ -10,4 +10,7 @@ export enum EAppRouter {
   BORROWING_MANAGEMENT_PAGE = "/borrowing-management",
   BORROWING_MANAGEMENT_ADD_PAGE = "/borrowing-management/add",
   BORROWING_MANAGEMENT_EDIT_PAGE = "/borrowing-management/edit",
+  GENRE_MANGEMENT_PAGE = "/genre-management",
+  GENRE_MANGEMENT_ADD_PAGE = "/genre-management/add",
+  GENRE_MANGEMENT_EDIT_PAGE = "/genre-management/edit",
 }

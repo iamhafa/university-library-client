@@ -65,7 +65,7 @@ const items = [
   },
   {
     title: "Thể loại sách",
-    url: "#",
+    url: EAppRouter.GENRE_MANGEMENT_PAGE,
     icon: Tags,
     description: "Phân loại sách",
   },
