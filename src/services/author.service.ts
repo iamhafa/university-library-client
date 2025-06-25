@@ -19,13 +19,23 @@ export default abstract class AuthorApiService {
     return data;
   }
 
+  static async create(payload: TAuthor): TApiResponse<TAuthor> {
+    const { data } = await api.post(this.endpoint, payload);
+    return data;
+  }
+
   static async searchByQuery(query: string): TApiResponse<TAuthor> {
     const { data } = await api.get(`${this.endpoint}/search?q=${query}`);
     return data;
   }
 
-  static async getOneById(id: string): TApiResponse<TAuthor> {
+  static async getById(id: string): TApiResponse<TAuthor> {
     const { data } = await api.get(`${this.endpoint}/${id}`);
+    return data;
+  }
+
+  static async updateById(id: string, updateData: Partial<TAuthor>) {
+    const { data } = await api.put(`${this.endpoint}/${id}`, updateData);
     return data;
   }
 

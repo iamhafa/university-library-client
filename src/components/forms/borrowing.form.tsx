@@ -1,4 +1,4 @@
-// components/forms/borrowing.form.tsx
+// src/components/forms/borrowing.form.tsx
 "use client";
 
 import { FC, useEffect, useRef, useState } from "react";
@@ -37,10 +37,9 @@ export const BorrowingForm: FC<Props> = ({
   const [borrowingItems, setBorrowingItems] = useState<TBorrowingItemsFormValues[]>([]);
 
   const {
-    register,
     control,
+    register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<TBorrowingFormValues>({
     resolver: zodResolver(borrowingFormSchema),
@@ -49,6 +48,7 @@ export const BorrowingForm: FC<Props> = ({
       ...defaultValues,
       borrowing_date: format(date.current, "yyyy-MM-dd"), // Default to today
       due_date: format(addDays(date.current, 15), "yyyy-MM-dd"), // Default to 15 days from now
+      returned_date: null,
     },
   });
 
@@ -70,20 +70,22 @@ export const BorrowingForm: FC<Props> = ({
   }, []);
 
   // Set default values when they change (for edit mode)
+  // useEffect(() => {
+  //   if (defaultValues && Object.keys(defaultValues).length > 0) {
+  //     Object.entries(defaultValues).forEach(([key, value]) => {
+  //       if (value !== undefined) {
+  //         setValue(key as keyof TBorrowingFormValues, value);
+  //       }
+  //     });
+  //   }
+  // }, [defaultValues, setValue]);
+
   useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      Object.entries(defaultValues).forEach(([key, value]) => {
-        if (value !== undefined) {
-          setValue(key as keyof TBorrowingFormValues, value);
-        }
-      });
-    }
-  }, [defaultValues, setValue]);
+    console.log("borrowingItems changed:", borrowingItems);
+  }, [borrowingItems]);
 
   const onValidSubmit = async (borrowing: TBorrowingFormValues): Promise<void> => {
     // Validate that at least one book is selected
-    console.log(borrowingItems);
-
     if (borrowingItems.length === 0) {
       alert("Vui lòng thêm ít nhất một cuốn sách để mượn.");
       return;
@@ -96,6 +98,8 @@ export const BorrowingForm: FC<Props> = ({
       alert("Vui lòng điền đầy đủ thông tin cho tất cả các cuốn sách.");
       return;
     }
+    console.log(borrowing);
+    console.log(borrowingItems);
 
     await onSubmit(borrowing, borrowingItems);
   };

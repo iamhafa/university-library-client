@@ -61,6 +61,9 @@ export default function AddBorrowing() {
         onCancel={() => router.back()}
         submitButtonText="Lưu lượt mượn"
         isLoading={isSubmitting}
+        defaultValues={{
+          returned_date: null,
+        }}
       />
     </div>
   );

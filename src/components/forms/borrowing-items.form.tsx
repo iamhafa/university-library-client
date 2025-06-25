@@ -1,4 +1,4 @@
-// components/forms/borrowing-items.form.tsx
+// src/components/forms/borrowing-items.form.tsx
 "use client";
 
 import { FC, useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectContent } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ErrorMessage } from "@/components/errors/error-message";
 import { TBorrowingItemsFormValues, borrowingItemsFormSchema } from "@/schemas/borrowing-form.schema";
@@ -53,11 +53,11 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
     formState: { errors },
   } = useForm<TBorrowingItemsFormValues>({
     resolver: zodResolver(borrowingItemsFormSchema),
-    // defaultValues: {
-    //   book_id: undefined,
-    //   quantity: 1,
-    //   price: 0,
-    // },
+    defaultValues: {
+      book_id: undefined,
+      quantity: 1,
+      price: 0,
+    },
   });
 
   // Fetch books for selection
@@ -215,6 +215,7 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
             {booksLoading ? "Đang tải..." : "Thêm sách"}
           </Button>
         </DialogTrigger>
+        <DialogDescription>Chỉnh sửa thông tin cuốn sách cho lượt mượn.</DialogDescription>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{editingIndex !== null ? "Chỉnh sửa sách" : "Thêm sách mới"}</DialogTitle>

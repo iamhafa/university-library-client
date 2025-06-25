@@ -218,7 +218,7 @@ export function AppSidebar() {
           ) : (
             <div className="flex justify-center">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/avatar.jpg" alt="User" />
+                <AvatarImage src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" />
                 <AvatarFallback className="bg-primary text-primary-foreground text-sm">AD</AvatarFallback>
               </Avatar>
             </div>

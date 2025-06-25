@@ -1,3 +1,4 @@
+// src/app/borrowing-management/edit/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -108,6 +109,7 @@ export default function EditBorrowingPage() {
           member_id: borrowing.member_id,
           borrowing_date: borrowing.borrowing_date,
           due_date: borrowing.due_date,
+          returned_date: null,
         }}
       />
     </div>
