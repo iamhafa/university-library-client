@@ -9,10 +9,10 @@ import {
   User,
   LogOut,
   BookOpen,
-  Clock,
   Tags,
   PanelLeftClose,
   PanelLeftOpen,
+  UserCog,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -76,10 +76,10 @@ const items = [
     description: "Theo dõi mượn sách",
   },
   {
-    title: "Quá hạn trả sách",
-    url: "#",
-    icon: Clock,
-    description: "Sách quá hạn",
+    title: "Thành viên",
+    url: EAppRouter.MEMBER_MANAGEMENT_PAGE,
+    icon: UserCog,
+    description: "Quản lý thành viên",
   },
 ];
 
@@ -114,7 +114,7 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
                 {items.map((item) => {
-                  const isActive = pathname === item.url || (item.url !== "#" && pathname.startsWith(item.url));
+                  const isActive: boolean = pathname.includes(item.url);
 
                   return (
                     <SidebarMenuItem key={item.title}>
