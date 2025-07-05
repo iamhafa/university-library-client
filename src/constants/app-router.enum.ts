@@ -21,4 +21,8 @@ export enum EAppRouter {
   MEMBER_MANAGEMENT_PAGE = "/member-management",
   MEMBER_MANAGEMENT_ADD_PAGE = "/member-management/add",
   MEMBER_MANAGEMENT_EDIT_PAGE = "/member-management/edit",
+  /* Nhà xuất bản */
+  PUBLISHER_MANAGEMENT_PAGE = "/publisher-management",
+  PUBLISHER_MANAGEMENT_ADD_PAGE = "/publisher-management/add",
+  PUBLISHER_MANAGEMENT_EDIT_PAGE = "/publisher-management/edit",
 }

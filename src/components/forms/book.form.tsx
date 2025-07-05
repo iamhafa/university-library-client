@@ -201,7 +201,7 @@ export const BookForm: FC<Props> = ({ onSubmit, onCancel, defaultValues = {}, su
 
       <div className="col-span-1">
         <Label htmlFor="publish_date">Năm xuất bản</Label>
-        <Input id="publish_date" {...register("publish_date")} disabled={isLoading} />
+        <Input id="publish_date" type="date" {...register("publish_date")} disabled={isLoading} />
         <ErrorMessage message={errors.publish_date?.message} />
       </div>
 

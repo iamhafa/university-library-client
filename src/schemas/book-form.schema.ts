@@ -76,9 +76,9 @@ export const bookFormSchema = z.object({
   publish_date: z
     .string()
     .nonempty({ message: "Ngày xuất bản là bắt buộc" })
-    .regex(/^\d{2}-\d{2}-\d{4}$/, {
-      message: "Ngày xuất bản phải đúng định dạng DD-MM-YYY",
-    })
+    // .regex(/^\d{2}-\d{2}-\d{4}$/, {
+    //   message: "Ngày xuất bản phải đúng định dạng DD-MM-YYYY",
+    // })
     .optional(),
 
   description: z

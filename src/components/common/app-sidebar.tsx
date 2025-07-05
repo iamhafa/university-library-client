@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   UserCog,
+  Factory,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -44,12 +45,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 // Menu items với icons được cải thiện
+// Danh sách menu sidebar với icon và mô tả ngắn gọn, dễ hiểu
 const items = [
   {
     title: "Dashboard",
     url: EAppRouter.DASHBOARD,
     icon: ActivitySquareIcon,
-    description: "Tổng quan hệ thống",
+    description: "Tổng quan thư viện",
   },
   {
     title: "Sách thư viện",
@@ -62,6 +64,12 @@ const items = [
     url: EAppRouter.AUTHOR_MANAGEMENT_PAGE,
     icon: EditIcon,
     description: "Quản lý tác giả",
+  },
+  {
+    title: "Nhà xuất bản",
+    url: EAppRouter.PUBLISHER_MANAGEMENT_PAGE,
+    icon: Factory,
+    description: "Quản lý nhà xuất bản",
   },
   {
     title: "Thể loại sách",
