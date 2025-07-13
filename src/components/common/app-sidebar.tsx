@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
   UserCog,
   Factory,
+  Ticket,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -82,6 +83,12 @@ const items = [
     url: EAppRouter.BORROWING_MANAGEMENT_PAGE,
     icon: Calendar,
     description: "Theo dõi mượn sách",
+  },
+  {
+    title: "Vé phạt",
+    url: EAppRouter.FINE_TICKET_MANAGEMENT_PAGE,
+    icon: Ticket,
+    description: "Quản lý vé phạt",
   },
   {
     title: "Thành viên",

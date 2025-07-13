@@ -25,4 +25,9 @@ export enum EAppRouter {
   PUBLISHER_MANAGEMENT_PAGE = "/publisher-management",
   PUBLISHER_MANAGEMENT_ADD_PAGE = "/publisher-management/add",
   PUBLISHER_MANAGEMENT_EDIT_PAGE = "/publisher-management/edit",
+
+  /* Vé phạt */
+  FINE_TICKET_MANAGEMENT_PAGE = "/fine-ticket-management",
+  FINE_TICKET_MANAGEMENT_ADD_PAGE = "/fine-ticket-management/add",
+  FINE_TICKET_MANAGEMENT_EDIT_PAGE = "/fine-ticket-management/edit",
 }

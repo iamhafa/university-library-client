@@ -1,0 +1,9 @@
+export enum FINE_TICKET_STATUS {
+  PAID = "PAID",
+  UNPAID = "UNPAID",
+}
+
+export enum FINE_TICKET_PAYMENT_METHOD {
+  CASH = "CASH",
+  BANKING = "BANKING",
+}
