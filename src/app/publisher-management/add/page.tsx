@@ -1,4 +1,3 @@
-
 // pages/add-publisher/page.tsx
 "use client";
 
@@ -18,9 +17,9 @@ export default function AddPublisher() {
   const handleSubmit = async (values: TPublisherFormValues): Promise<void> => {
     try {
       setIsSubmitting(true);
-      const results = await PublisherApiService.create(values);
+      const { results } = await PublisherApiService.create(values);
 
-      if (results) {
+      if (results === "1") {
         toast.success("Tạo nhà xuất bản thành công!", { richColors: true });
         router.push(EAppRouter.PUBLISHER_MANAGEMENT_PAGE);
       } else {

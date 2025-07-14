@@ -35,6 +35,7 @@ export const getFineTicketTableColumns = (
     enableHiding: false,
   },
   {
+    id: "member",
     accessorKey: "borrowing.member.name",
     header: "Thành viên",
   },
