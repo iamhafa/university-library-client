@@ -189,9 +189,7 @@ export const BorrowingItemsForm: FC<Props> = ({ borrowingItems, setBorrowingItem
     reset();
   };
 
-  const calculateTotal = (): number => {
-    return borrowingItems.reduce((total, item) => total + item.quantity * item.price, 0);
-  };
+  const calculateTotal = (): number => borrowingItems.reduce((total, item) => total + item.quantity * item.price, 0);
 
   // Show loading state while fetching existing items
   if (itemsLoading) {

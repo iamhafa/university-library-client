@@ -19,24 +19,23 @@ export default function AddBorrowing() {
       setIsSubmitting(true);
 
       // Step 1: Create borrowing record
-      const { results, error, dataPart } = await BorrowingServiceApi.create(values);
+      const { results, dataPart, error } = await BorrowingServiceApi.create(values);
+      console.log(borrowingItems);
 
-      if (results === "1" && dataPart?.id) {
-        // Step 2: Create borrowing items if any
+      if (results === "1" && dataPart.id) {
+        // Step 2: Create borrowing items
         if (borrowingItems.length > 0) {
           try {
-            const { results: itemsResult } = await BorrowingItemsService.createBulk(dataPart.id, borrowingItems);
+            const { results } = await BorrowingItemsService.createBulk(dataPart.id, borrowingItems);
 
-            if (itemsResult !== "1") {
+            if (results !== "1") {
               toast.error("Tạo lượt mượn thành công nhưng có lỗi khi thêm sách!");
               router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
-              return;
             }
-          } catch (itemsError) {
-            console.error("Error creating borrowing items:", itemsError);
+          } catch (err) {
+            console.error("Error creating borrowing items:", err);
             toast.error("Tạo lượt mượn thành công nhưng có lỗi khi thêm sách!");
             router.push(EAppRouter.BORROWING_MANAGEMENT_PAGE);
-            return;
           }
         }
 

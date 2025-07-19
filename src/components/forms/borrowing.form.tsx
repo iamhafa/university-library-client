@@ -13,6 +13,7 @@ import { Select, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectCont
 import { borrowingFormSchema, TBorrowingFormValues, TBorrowingItemsFormValues } from "@/schemas/borrowing-form.schema";
 import MemberApiService, { type TMember } from "@/services/member.service";
 import { BorrowingItemsForm } from "./borrowing-items.form";
+import { displayMemberType } from "@/helpers/display-member-type";
 
 type Props = {
   onSubmit: (values: TBorrowingFormValues, borrowingItems: TBorrowingItemsFormValues[]) => Promise<void>;
@@ -39,6 +40,7 @@ export const BorrowingForm: FC<Props> = ({
   const {
     control,
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<TBorrowingFormValues>({
@@ -70,15 +72,15 @@ export const BorrowingForm: FC<Props> = ({
   }, []);
 
   // Set default values when they change (for edit mode)
-  // useEffect(() => {
-  //   if (defaultValues && Object.keys(defaultValues).length > 0) {
-  //     Object.entries(defaultValues).forEach(([key, value]) => {
-  //       if (value !== undefined) {
-  //         setValue(key as keyof TBorrowingFormValues, value);
-  //       }
-  //     });
-  //   }
-  // }, [defaultValues, setValue]);
+  useEffect(() => {
+    if (defaultValues && Object.keys(defaultValues).length > 0) {
+      Object.entries(defaultValues).forEach(([key, value]) => {
+        if (value !== undefined) {
+          setValue(key as keyof TBorrowingFormValues, value);
+        }
+      });
+    }
+  }, [defaultValues, setValue]);
 
   useEffect(() => {
     console.log("borrowingItems changed:", borrowingItems);
@@ -86,6 +88,8 @@ export const BorrowingForm: FC<Props> = ({
 
   const onValidSubmit = async (borrowing: TBorrowingFormValues): Promise<void> => {
     // Validate that at least one book is selected
+    console.log(borrowingItems);
+
     if (borrowingItems.length === 0) {
       alert("Vui lòng thêm ít nhất một cuốn sách để mượn.");
       return;
@@ -108,15 +112,6 @@ export const BorrowingForm: FC<Props> = ({
     console.error("Form validation errors:", errors);
   };
 
-  const getMemberTypeLabel = (memberType: string): string => {
-    const memberTypeMap = {
-      UNDERGRADUATE_STUDENT: "Sinh viên đại học",
-      POSTGRADUATE_STUDENT: "Sinh viên sau đại học",
-      LIBRARY_STAFF: "Nhân viên thư viện",
-    };
-    return memberTypeMap[memberType as keyof typeof memberTypeMap] || memberType;
-  };
-
   if (optionsLoading) {
     return <div className="p-10">Đang tải dữ liệu...</div>;
   }
@@ -131,7 +126,7 @@ export const BorrowingForm: FC<Props> = ({
             control={control}
             render={({ field }) => (
               <Select
-                onValueChange={(value) => field.onChange(parseInt(value))}
+                onValueChange={(value: string) => field.onChange(parseInt(value))}
                 value={field.value?.toString()}
                 disabled={isLoading}
               >
@@ -143,12 +138,7 @@ export const BorrowingForm: FC<Props> = ({
                     {memberOptions.map((member: TMember) => (
                       <SelectItem key={member.id} value={String(member.id)}>
                         <div className="flex flex-col">
-                          <span className="font-medium">
-                            {member.last_name} {member.first_name} -
-                            <span className="text-sm text-gray-500">
-                              ({member.email} • {getMemberTypeLabel(member.member_type)})
-                            </span>
-                          </span>
+                          {member.name} - ({member.email} • {displayMemberType(member.member_type)})
                         </div>
                       </SelectItem>
                     ))}

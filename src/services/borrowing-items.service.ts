@@ -31,8 +31,7 @@ export abstract class BorrowingItemsService {
   }
 
   static async createBulk(borrowingId: number, items: TBorrowingItemsFormValues[]): TApiResponse<TBorrowingItems[]> {
-    const { data } = await api.post(`${this.endpoint}/bulk-create`, {
-      borrowing_id: borrowingId,
+    const { data } = await api.post(`/borrowing/${borrowingId}/items/bulk-create`, {
       items,
     });
     return data;
